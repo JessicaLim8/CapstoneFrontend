@@ -2,33 +2,29 @@ import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
 import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
 import Title from './Title';
+import { contentQuotesLinter } from '@ant-design/cssinjs/lib/linters';
 
-// Generate Sales Data
-function createData(time, amount) {
-  return { time, amount };
+function createData(unformattedData) {
+    const trendData = unformattedData.data.map(remap);
+    console.log(trendData);
+    return trendData;
 }
 
-const data = [
-  createData('00:00', 0),
-  createData('03:00', 300),
-  createData('06:00', 600),
-  createData('09:00', 800),
-  createData('12:00', 1500),
-  createData('15:00', 2000),
-  createData('18:00', 2400),
-  createData('21:00', 2400),
-  createData('24:00', undefined),
-];
+function remap(force) {
+    return {force};
+}
 
-export default function Chart() {
+export default function DetailedChart(props) {
   const theme = useTheme();
 
   return (
     <React.Fragment>
-      <Title>Today</Title>
+      <Title>
+        {props.data.exercise} on {props.data.date}
+      </Title>
       <ResponsiveContainer>
         <LineChart
-          data={data}
+          data={createData(props.data)}
           margin={{
             top: 16,
             right: 16,
@@ -37,7 +33,6 @@ export default function Chart() {
           }}
         >
           <XAxis
-            dataKey="time"
             stroke={theme.palette.text.secondary}
             style={theme.typography.body2}
           />
@@ -54,13 +49,13 @@ export default function Chart() {
                 ...theme.typography.body1,
               }}
             >
-              Sales ($)
+              Force (N)
             </Label>
           </YAxis>
           <Line
             isAnimationActive={false}
             type="monotone"
-            dataKey="amount"
+            dataKey="force"
             stroke={theme.palette.primary.main}
             dot={false}
           />

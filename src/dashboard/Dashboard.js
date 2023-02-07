@@ -18,9 +18,16 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { mainListItems, secondaryListItems } from './listItems';
-import Chart from './Chart';
-import Deposits from './Deposits';
-import Orders from './Orders';
+import TimeTrendLineChart from './TimeTrendLineChart';
+import DetailedChart from './DetailedChart';
+import Summary from './Summary';
+import History from './History';
+
+const data = [
+  {date: '18-10-2022', exercise: "Left Eversion Strength",  max: 400, avg: 256, data: [10, 11, 12, 11, 18, 15, 14, 13, 12, 9, 16, 18, 12]}, 
+  {date: '31-10-2022', exercise: "Left Eversion Strength", max: 300, avg: 300, data: [10, 11, 12, 13, 14, 15, 14, 13, 12]}, 
+  {date: '01-11-2022', exercise: "Left Eversion Strength", max: 551, avg: 235, data: [10, 11, 12, 13, 14, 15, 14, 13, 12]}, 
+];
 
 function Copyright(props) {
   return (
@@ -118,13 +125,8 @@ function DashboardContent() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard
+              Athlete Profile
             </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
@@ -162,20 +164,7 @@ function DashboardContent() {
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
-              {/* Chart */}
-              <Grid item xs={12} md={8} lg={9}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: 240,
-                  }}
-                >
-                  <Chart />
-                </Paper>
-              </Grid>
-              {/* Recent Deposits */}
+              {/* Summary */}
               <Grid item xs={12} md={4} lg={3}>
                 <Paper
                   sx={{
@@ -185,13 +174,52 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <Deposits />
+                  <Summary exercise={data[0].exercise} max={data[0].max} avg={data[0].avg}/>
                 </Paper>
               </Grid>
+              {/* Last Datapoint */}
+              <Grid item xs={12} md={8} lg={9}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 240,
+                  }}
+                >
+                  <DetailedChart data={data[0]}/>
+                </Paper>
+              </Grid>
+              {/* Max */}
+              <Grid item xs={12} md={8} lg={6}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 240,
+                  }}
+                >
+                  <TimeTrendLineChart title="Max Force" data={data} dataKey="max"/>
+                </Paper>
+              </Grid>
+              {/* Avg */}
+              <Grid item xs={12} md={6} lg={6}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 240,
+                  }}
+                >
+                  <TimeTrendLineChart title="Average Force" data={data} dataKey="avg"/>
+                </Paper>
+              </Grid> 
               {/* Recent Orders */}
               <Grid item xs={12}>
                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                  <Orders />
+                  <History data={data} />
                 </Paper>
               </Grid>
             </Grid>
