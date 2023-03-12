@@ -1,4 +1,6 @@
-import * as React from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiDrawer from '@mui/material/Drawer';
@@ -17,6 +19,10 @@ import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { mainListItems, secondaryListItems } from './listItems';
 import TimeTrendLineChart from './TimeTrendLineChart';
 import DetailedChart from './DetailedChart';
@@ -34,7 +40,7 @@ function Copyright(props) {
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
       <Link color="inherit" href="https://mui.com/">
-        Your Website
+      Jessica Lim
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -89,12 +95,71 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 const mdTheme = createTheme();
+const localURL = "http://localhost:3000";
+
+const fetchUser = (userid, setUserData) => {
+  const userURL = `/users/${userid}`;
+  axios.get(localURL + userURL).then(data => {
+    if (data.data.user) {
+        setUserData(data.data.user)
+    }
+  });
+}
+
+const fetchRecords = (userid, setRecordData) => {
+  const userURL = `/records?userId=${userid}`;
+  axios.get(localURL + userURL).then(data => {
+    if (data.data.records) {
+        setRecordData(data.data.records)
+    }
+  });
+}
+
+const fetchExRecords = (userid, exercise, setExRecordLeft, setExRecordRight) => {
+  const leftURL = `/records?userId=${userid}&exercise=${exercise}&side=L`;
+  axios.get(localURL + leftURL).then(data => {
+    if (data.data.records) {
+        setExRecordLeft(data.data.records)
+    }
+  });
+  const rightURL = `/records?userId=${userid}&exercise=${exercise}&side=R`;
+  axios.get(localURL + rightURL).then(data => {
+    if (data.data.records) {
+        setExRecordRight(data.data.records)
+    }
+  });
+}
 
 function DashboardContent() {
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState(false);
+  const [userData, setUserData] = useState([]);
+  const [recordData, setRecordData] = useState([]);
+  const [exercise, setExercise] = useState('plantarflexion');
+  const [exRecordDataRight, setExRecordRight] = useState([]);
+  const [exRecordDataLeft, setExRecordLeft] = useState([]);
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  const handleChange = (event) => {
+    setExercise(event.target.value);
+  };
+
+  const { userid } = useParams();
+
+  useEffect(() => {
+    // call an API and in the success or failure fill the data buy using setData function
+    // it could be like below
+    fetchUser(userid, setUserData);
+    fetchRecords(userid, setRecordData);
+    fetchExRecords(userid, exercise, setExRecordLeft, setExRecordRight);
+  }, []);
+
+  console.log(userData)
+  console.log(recordData)
+  console.log(exRecordDataLeft)
+  console.log(exRecordDataRight)
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -125,7 +190,7 @@ function DashboardContent() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Athlete Profile
+              {userData.firstName} {userData.lastName}'s Profile
             </Typography>
           </Toolbar>
         </AppBar>
@@ -162,8 +227,28 @@ function DashboardContent() {
           }}
         >
           <Toolbar />
+
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <Grid item xs={12} md={6} xl={3}>
+                  <FormControl fullWidth>
+                    <InputLabel id="select-label">Exercise</InputLabel>
+                    <Select
+                      labelId="select-label"
+                      id="simple-select"
+                      value={exercise}
+                      label="Exercise"
+                      onChange={handleChange}
+                      defaultValue="plantarflexion"
+                    >
+                      <MenuItem value="plantarflexion">Plantarflexion</MenuItem>
+                      <MenuItem value="inversion">Inversion</MenuItem>
+                      <MenuItem value="eversion">Eversion</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
               {/* Summary */}
               <Grid item xs={12} md={4} lg={3}>
                 <Paper
@@ -174,20 +259,7 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <Summary exercise={data[0].exercise} max={data[0].max} avg={data[0].avg}/>
-                </Paper>
-              </Grid>
-              {/* Last Datapoint */}
-              <Grid item xs={12} md={8} lg={9}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: 240,
-                  }}
-                >
-                  <DetailedChart data={data[0]}/>
+                  <Summary left={exRecordDataLeft.length != 0 ? exRecordDataLeft[0] : []} right={exRecordDataRight.length != 0 ? exRecordDataRight[0] : []}/>
                 </Paper>
               </Grid>
               {/* Max */}
@@ -216,10 +288,24 @@ function DashboardContent() {
                   <TimeTrendLineChart title="Average Force" data={data} dataKey="avg"/>
                 </Paper>
               </Grid> 
+              {/* Last Datapoint */}
+              <Grid item xs={12} md={8} lg={9}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 240,
+                  }}
+                >
+                  <DetailedChart data={data[0]}/>
+                </Paper>
+              </Grid>
+             
               {/* Recent Orders */}
               <Grid item xs={12}>
                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                  <History data={data} />
+                  <History data={recordData} />
                 </Paper>
               </Grid>
             </Grid>
