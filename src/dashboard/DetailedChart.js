@@ -5,7 +5,9 @@ import Title from './Title';
 import { contentQuotesLinter } from '@ant-design/cssinjs/lib/linters';
 
 function createData(unformattedData) {
+    console.log("CRETE DATA")
     const trendData = unformattedData.data.map(remap);
+    console.log(trendData)
     return trendData;
 }
 
@@ -50,7 +52,7 @@ export default function DetailedChart(props) {
           <XAxis
             tick={false}
           />
-          {props.right &&
+          {props.right && 
             <Line
               data={createData(props.right)}
               isAnimationActive={false}
@@ -60,7 +62,7 @@ export default function DetailedChart(props) {
               dot={false}
             />
           }
-          {props.left &&
+          {props.left && 
             <Line
               data={createData(props.left)}
               isAnimationActive={false}

@@ -25,7 +25,6 @@ const columns = [
   ];
 
 const onRowSelect = (row, setRowSelect) => {
-    console.log(row.id)
     setRowSelect(row.id)
 };
 
@@ -65,32 +64,22 @@ function Users(props) {
 
     return (
         <div>
-            <Button onClick={handleOpen}>Open modal</Button>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                disableBackdropClick
-            > 
-                <Box sx={style}>
-                    <IconButton onClick={() => handleClose()}>
-                        <CloseIcon/>
-                    </IconButton>
-                    <Title>Select Athlete</Title>
-                    {rowSelect ? 
-                        <Navigate to={`/users/${rowSelect}`}/> :
-                        <div style={{height: '500px', width: '100%', padding: "10px"}}>
-                            <DataGrid
-                                getRowId={(row) => row._id}
-                                rows={currentUsers}
-                                columns={columns}
-                                onRowClick={(row) => onRowSelect(row, setRowSelect)}
-                                width={700}
-                            />
-                        </div>
-                    }
-                </Box>
-          </Modal>
+            <Title>Select Athlete</Title>
+            {rowSelect ? 
+                <Navigate to={`/users/${rowSelect}`}/> :
+                <div style={{height: '500px', width: '100%', padding: "10px"}}>
+                    <DataGrid
+                        getRowId={(row) => row._id}
+                        rows={currentUsers}
+                        columns={columns}
+                        onRowClick={(row) => onRowSelect(row, setRowSelect)}
+                        width={700}
+                    />
+                </div>
+            }
         </div>
+
+
     );
 }
 

@@ -23,11 +23,15 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Modal from '@mui/material/Modal';
+import CloseIcon from '@mui/icons-material/Close';
+import Button from '@mui/material/Button';
 import { mainListItems, secondaryListItems } from './listItems';
 import TimeTrendLineChart from './TimeTrendLineChart';
 import DetailedChart from './DetailedChart';
 import Summary from './Summary';
 import History from './History';
+import Users from './Users';
 
 const data = [
   {date: '18-10-2022', exercise: "Left Eversion Strength",  max: 400, avg: 256, data: [10, 11, 12, 11, 18, 15, 14, 13, 12, 9, 16, 18, 12]}, 
@@ -94,6 +98,18 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
 const mdTheme = createTheme();
 const localURL = "http://localhost:3000";
 
@@ -137,6 +153,17 @@ function DashboardContent() {
   const [exercise, setExercise] = useState('plantarflexion');
   const [exRecordDataRight, setExRecordRight] = useState([]);
   const [exRecordDataLeft, setExRecordLeft] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleModalOpen = () => setModalOpen(true);
+
+  const handleModalClose = (event, reason) => 
+  {
+      if (reason && reason == "backdropClick") {
+          return
+      }
+      setModalOpen(false)
+  };
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -148,8 +175,6 @@ function DashboardContent() {
 
   const { userid } = useParams();
   
-  console.log(userid);
-
   useEffect(() => {
     // call an API and in the success or failure fill the data buy using setData function
     // it could be like below
@@ -157,11 +182,6 @@ function DashboardContent() {
     fetchRecords(userid, setRecordData);
     fetchExRecords(userid, exercise, setExRecordLeft, setExRecordRight);
   }, []);
-
-  console.log(userData)
-  console.log(recordData)
-  console.log(exRecordDataLeft)
-  console.log(exRecordDataRight)
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -173,18 +193,20 @@ function DashboardContent() {
               pr: '24px', // keep right padding when drawer closed
             }}
           >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
+            { false &&
+              <IconButton
+                edge="start"
+                color="inherit"
+                aria-label="open drawer"
+                onClick={toggleDrawer}
+                sx={{
+                  marginRight: '36px',
+                  ...(open && { display: 'none' }),
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+            }
             <Typography
               component="h1"
               variant="h6"
@@ -196,6 +218,7 @@ function DashboardContent() {
             </Typography>
           </Toolbar>
         </AppBar>
+        {false &&
         <Drawer variant="permanent" open={open}>
           <Toolbar
             sx={{
@@ -216,6 +239,7 @@ function DashboardContent() {
             {secondaryListItems}
           </List>
         </Drawer>
+        }
         <Box
           component="main"
           sx={{
@@ -230,10 +254,22 @@ function DashboardContent() {
         >
           <Toolbar />
 
+          <Modal
+                open={modalOpen}
+                onClose={handleModalClose}
+                disableBackdropClick
+            > 
+                <Box sx={style}>
+                    <IconButton onClick={() => handleModalClose()}>
+                        <CloseIcon/>
+                    </IconButton>
+                    <Users/>
+                </Box>
+          </Modal>
+
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Grid item xs={12} md={6} xl={3}>
+                <Grid item xs={12} md={6} xl={6}>
                   <FormControl fullWidth>
                     <InputLabel id="select-label">Exercise</InputLabel>
                     <Select
@@ -250,7 +286,12 @@ function DashboardContent() {
                     </Select>
                   </FormControl>
                 </Grid>
-              </Grid>
+                <Grid item xs={12} md={3} xl={3}>
+                  <Button variant="outlined" onClick={() => console.log("Start Recording")}>Start Recording</Button>
+                </Grid>
+                <Grid item xs={12} md={3} xl={3}>
+                  <Button variant="contained" onClick={() => setModalOpen(true)}>Switch Athlete</Button>
+                </Grid>
               {/* Summary */}
               <Grid item xs={12} md={12} lg={12}>
                 <Paper
@@ -312,7 +353,7 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <DetailedChart exercise={exercise} right={exRecordDataLeft ? exRecordDataRight[0] : []}/>
+                  <DetailedChart exercise={exercise} right={exRecordDataRight ? exRecordDataRight[0] : []}/>
                 </Paper>
               </Grid>
              
