@@ -147,6 +147,8 @@ function DashboardContent() {
   };
 
   const { userid } = useParams();
+  
+  console.log(userid);
 
   useEffect(() => {
     // call an API and in the success or failure fill the data buy using setData function
@@ -250,7 +252,7 @@ function DashboardContent() {
                 </Grid>
               </Grid>
               {/* Summary */}
-              <Grid item xs={12} md={4} lg={3}>
+              <Grid item xs={12} md={12} lg={12}>
                 <Paper
                   sx={{
                     p: 2,
@@ -263,7 +265,7 @@ function DashboardContent() {
                 </Paper>
               </Grid>
               {/* Max */}
-              <Grid item xs={12} md={8} lg={6}>
+              <Grid item xs={12} md={6}>
                 <Paper
                   sx={{
                     p: 2,
@@ -272,10 +274,23 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <TimeTrendLineChart title="Max Force" data={data} dataKey="max"/>
+                  <TimeTrendLineChart title="Max Force" left={exRecordDataLeft} right={exRecordDataRight} dataKey="max"/>
                 </Paper>
               </Grid>
               {/* Avg */}
+              <Grid item xs={12} md={6}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 240,
+                  }}
+                >
+                  <TimeTrendLineChart title="Average Force" left={exRecordDataLeft} right={exRecordDataRight} dataKey="avg"/>
+                </Paper>
+              </Grid> 
+              {/* Last Datapoint */}
               <Grid item xs={12} md={6} lg={6}>
                 <Paper
                   sx={{
@@ -285,11 +300,10 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <TimeTrendLineChart title="Average Force" data={data} dataKey="avg"/>
+                  <DetailedChart exercise={exercise} left={exRecordDataLeft ? exRecordDataLeft[0] : []}/>
                 </Paper>
-              </Grid> 
-              {/* Last Datapoint */}
-              <Grid item xs={12} md={8} lg={9}>
+              </Grid>
+              <Grid item xs={12} md={6} lg={6}>
                 <Paper
                   sx={{
                     p: 2,
@@ -298,7 +312,7 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <DetailedChart data={data[0]}/>
+                  <DetailedChart exercise={exercise} right={exRecordDataLeft ? exRecordDataRight[0] : []}/>
                 </Paper>
               </Grid>
              

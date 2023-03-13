@@ -21,6 +21,7 @@ import { mainListItems, secondaryListItems } from './listItems';
 import Chart from './Chart';
 import Deposits from './Deposits';
 import Orders from './Orders';
+import axios from 'axios';
 
 function Copyright(props: any) {
   return (
@@ -87,11 +88,19 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
+const fetchUser = () => {
+  console.log("STARTING FETCH");
+  const localURL = "http://localhost:3000/users";
+  axios.get(localURL).then(data => {console.log(data)});
+}
+
 function DashboardContent() {
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
+  console.log("BEFORE FETCH");
+  fetchUser();
 
   return (
     <ThemeProvider theme={mdTheme}>

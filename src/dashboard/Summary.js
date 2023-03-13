@@ -12,7 +12,7 @@ export default function Summary(props) {
   return (
     <React.Fragment>
       <Title>
-        Summary: Last Attempt
+        Last Attempt: Summary
       </Title>
       <Grid container spacing={3}>
         { props.left &&

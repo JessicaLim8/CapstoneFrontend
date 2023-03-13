@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
-import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import Title from './Title';
 import { contentQuotesLinter } from '@ant-design/cssinjs/lib/linters';
 
 function createData(unformattedData) {
     const trendData = unformattedData.data.map(remap);
-    console.log(trendData);
     return trendData;
 }
 
@@ -16,15 +15,15 @@ function remap(force) {
 
 export default function DetailedChart(props) {
   const theme = useTheme();
+  console.log(props)
 
   return (
     <React.Fragment>
       <Title>
-        {props.data.exercise} on {props.data.date}
+        {props.left ? "Left" : "Right"} {props.exercise}
       </Title>
       <ResponsiveContainer>
         <LineChart
-          data={createData(props.data)}
           margin={{
             top: 16,
             right: 16,
@@ -32,10 +31,6 @@ export default function DetailedChart(props) {
             left: 24,
           }}
         >
-          <XAxis
-            stroke={theme.palette.text.secondary}
-            style={theme.typography.body2}
-          />
           <YAxis
             stroke={theme.palette.text.secondary}
             style={theme.typography.body2}
@@ -52,13 +47,29 @@ export default function DetailedChart(props) {
               Force (N)
             </Label>
           </YAxis>
-          <Line
-            isAnimationActive={false}
-            type="monotone"
-            dataKey="force"
-            stroke={theme.palette.primary.main}
-            dot={false}
+          <XAxis
+            tick={false}
           />
+          {props.right &&
+            <Line
+              data={createData(props.right)}
+              isAnimationActive={false}
+              type="monotone"
+              datakey="force"
+              stroke={theme.palette.primary.main}
+              dot={false}
+            />
+          }
+          {props.left &&
+            <Line
+              data={createData(props.left)}
+              isAnimationActive={false}
+              type="monotone"
+              datakey="force"
+              stroke={theme.palette.secondary.main}
+              dot={false}
+            />
+          }
         </LineChart>
       </ResponsiveContainer>
     </React.Fragment>
