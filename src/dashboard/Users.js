@@ -25,7 +25,7 @@ const columns = [
   ];
 
 const onRowSelect = (row, setRowSelect) => {
-    setRowSelect(row.id)
+    window.location.href(row.id);
 };
 
 const style = {
@@ -66,20 +66,19 @@ function Users(props) {
         <div>
             <Title>Select Athlete</Title>
             {rowSelect ? 
-                <Navigate to={`/users/${rowSelect}`}/> :
+                <Navigate to={"/users/"+rowSelect}/> 
+                :
                 <div style={{height: '500px', width: '100%', padding: "10px"}}>
                     <DataGrid
                         getRowId={(row) => row._id}
                         rows={currentUsers}
                         columns={columns}
-                        onRowClick={(row) => onRowSelect(row, setRowSelect)}
+                        onRowClick={props.onRowSelect}
                         width={700}
                     />
                 </div>
             }
         </div>
-
-
     );
 }
 

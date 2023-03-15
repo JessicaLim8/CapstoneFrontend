@@ -173,6 +173,10 @@ function DashboardContent() {
     setExercise(event.target.value);
   };
 
+  const handleChangeUser = (row) => {
+    window.location.href = "/users/"+row.id;
+  };
+
   const { userid } = useParams();
   
   useEffect(() => {
@@ -263,7 +267,7 @@ function DashboardContent() {
                     <IconButton onClick={() => handleModalClose()}>
                         <CloseIcon/>
                     </IconButton>
-                    <Users/>
+                    <Users onRowSelect={handleChangeUser} />
                 </Box>
           </Modal>
 

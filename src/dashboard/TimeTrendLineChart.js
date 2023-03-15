@@ -5,6 +5,8 @@ import Title from './Title';
 
 export default function TimeTrendLineChart(props) {
   const theme = useTheme();
+  console.log("WorkING")
+  console.log(props.left)
 
   return (
     <React.Fragment>
