@@ -33,12 +33,6 @@ import Summary from './Summary';
 import History from './History';
 import Users from './Users';
 
-const data = [
-  {date: '18-10-2022', exercise: "Left Eversion Strength",  max: 400, avg: 256, data: [10, 11, 12, 11, 18, 15, 14, 13, 12, 9, 16, 18, 12]}, 
-  {date: '31-10-2022', exercise: "Left Eversion Strength", max: 300, avg: 300, data: [10, 11, 12, 13, 14, 15, 14, 13, 12]}, 
-  {date: '01-11-2022', exercise: "Left Eversion Strength", max: 551, avg: 235, data: [10, 11, 12, 13, 14, 15, 14, 13, 12]}, 
-];
-
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -177,6 +171,10 @@ function DashboardContent() {
     window.location.href = "/users/"+row.id;
   };
 
+  const setRecordURL = (userid) => {
+    window.location.href = "/record/"+userid;
+  };
+
   const { userid } = useParams();
   
   useEffect(() => {
@@ -291,7 +289,7 @@ function DashboardContent() {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} md={3} xl={3}>
-                  <Button variant="outlined" onClick={() => console.log("Start Recording")}>Start Recording</Button>
+                  <Button variant="outlined" onClick={() => setRecordURL(userid)}>Start Recording</Button>
                 </Grid>
                 <Grid item xs={12} md={3} xl={3}>
                   <Button variant="contained" onClick={() => setModalOpen(true)}>Switch Athlete</Button>

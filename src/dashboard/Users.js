@@ -73,7 +73,7 @@ function Users(props) {
                         getRowId={(row) => row._id}
                         rows={currentUsers}
                         columns={columns}
-                        onRowClick={props.onRowSelect}
+                        onRowClick={props.onRowSelect ? props.onRowSelect : onRowSelect}
                         width={700}
                     />
                 </div>
