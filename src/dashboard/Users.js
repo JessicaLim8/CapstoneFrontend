@@ -48,8 +48,6 @@ function Users(props) {
     const handleOpen = () => setOpen(true);
     const handleClose = (event, reason) => 
     {
-        console.log(event)
-        console.log(reason)
         if (reason && reason == "backdropClick") {
             return
         }

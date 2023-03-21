@@ -2,17 +2,23 @@ import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
 import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { add, format, differenceInCalendarDays, isFuture } from "date-fns";
+import moment from 'moment';
 import Title from './Title';
 
 const dateFormatter = date => {
-  const formatted = format(new Date(date), "dd/MMM");
-  console.log(formatted);
-  return formatted;
+  return moment(date).format('DD/MM/YY');
 };
+
+const data = [
+  {"avg": 21, "date": 10},
+  {"avg": 21, "date": 12},
+  {"avg": 21, "date": 16},
+  {"avg": 21, "date": 10},
+  {"avg": 21, "date": 10},
+]
 
 export default function TimeTrendLineChart(props) {
   const theme = useTheme();
-  console.log(props);
   
   return (
     <React.Fragment>
@@ -29,9 +35,11 @@ export default function TimeTrendLineChart(props) {
           }}
         >
           <XAxis
-            dataKey="date"
+            dataKey={"date"}
             stroke={theme.palette.text.secondary}
             style={theme.typography.body2}
+            tickFormatter={dateFormatter}
+
           />
           <YAxis
             stroke={theme.palette.text.secondary}

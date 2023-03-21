@@ -7,11 +7,17 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Title from './Title';
+import { add, format, differenceInCalendarDays, isFuture } from "date-fns";
 
 
 function preventDefault(event) {
   event.preventDefault();
 }
+
+const dateFormatter = date => {
+  const formatted = format(new Date(date), "MMM/dd/yyyy");
+  return formatted;
+};
 
 export default function History(props) {
   return (
@@ -31,7 +37,7 @@ export default function History(props) {
           {props.data.map((row) => (
             <TableRow key={row.id}>
               <TableCell>
-                <Link color="primary" href="#" onClick={preventDefault} sx={{ m: 0, p: 0 }}>{row.date}</Link>
+                <Link color="primary" href="#" onClick={preventDefault} sx={{ m: 0, p: 0 }}>{dateFormatter(row.date)}</Link>
               </TableCell>
               <TableCell>{row.max} N</TableCell>
               <TableCell>{row.avg} N</TableCell>
