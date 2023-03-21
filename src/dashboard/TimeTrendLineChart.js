@@ -1,13 +1,19 @@
 import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
 import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { add, format, differenceInCalendarDays, isFuture } from "date-fns";
 import Title from './Title';
+
+const dateFormatter = date => {
+  const formatted = format(new Date(date), "dd/MMM");
+  console.log(formatted);
+  return formatted;
+};
 
 export default function TimeTrendLineChart(props) {
   const theme = useTheme();
-  console.log("WorkING")
-  console.log(props.left)
-
+  console.log(props);
+  
   return (
     <React.Fragment>
       <Title>
@@ -43,7 +49,9 @@ export default function TimeTrendLineChart(props) {
               Force (N)
             </Label>
           </YAxis>
-          <Tooltip />
+          <Tooltip 
+            wrapperStyle={{fontSize: "1rem"}}
+          />
           <Legend
             wrapperStyle={{fontSize: "1rem"}}
           />
@@ -55,7 +63,6 @@ export default function TimeTrendLineChart(props) {
               type="monotone"
               dataKey={props.dataKey}
               stroke={theme.palette.primary.main}
-              dot={false}
             />
           }
           {props.right &&
@@ -66,7 +73,6 @@ export default function TimeTrendLineChart(props) {
               type="monotone"
               dataKey={props.dataKey}
               stroke={theme.palette.secondary.main}
-              dot={false}
             />
           }
         </LineChart>

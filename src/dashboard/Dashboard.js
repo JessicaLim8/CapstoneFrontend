@@ -307,6 +307,31 @@ function DashboardContent() {
                   <Summary left={exRecordDataLeft.length != 0 ? exRecordDataLeft[0] : []} right={exRecordDataRight.length != 0 ? exRecordDataRight[0] : []}/>
                 </Paper>
               </Grid>
+               {/* Last Datapoint */}
+               <Grid item xs={12} md={6} lg={6}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 240,
+                  }}
+                >
+                  <DetailedChart exercise={exercise} left={exRecordDataLeft ? exRecordDataLeft[0] : []}/>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} md={6} lg={6}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 240,
+                  }}
+                >
+                  <DetailedChart exercise={exercise} right={exRecordDataRight ? exRecordDataRight[0] : []}/>
+                </Paper>
+              </Grid>
               {/* Max */}
               <Grid item xs={12} md={6}>
                 <Paper
@@ -333,31 +358,7 @@ function DashboardContent() {
                   <TimeTrendLineChart title="Average Force" left={exRecordDataLeft} right={exRecordDataRight} dataKey="avg"/>
                 </Paper>
               </Grid> 
-              {/* Last Datapoint */}
-              <Grid item xs={12} md={6} lg={6}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: 240,
-                  }}
-                >
-                  <DetailedChart exercise={exercise} left={exRecordDataLeft ? exRecordDataLeft[0] : []}/>
-                </Paper>
-              </Grid>
-              <Grid item xs={12} md={6} lg={6}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: 240,
-                  }}
-                >
-                  <DetailedChart exercise={exercise} right={exRecordDataRight ? exRecordDataRight[0] : []}/>
-                </Paper>
-              </Grid>
+             
              
               {/* Recent Orders */}
               <Grid item xs={12}>
