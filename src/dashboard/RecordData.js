@@ -137,7 +137,7 @@ export default function RecordData() {
   };
 
   const setUserURL = (userid) => {
-    window.location.href = "/record/"+userid;
+    window.location.href = "/users/"+userid;
   };
 
   const { userid } = useParams();
