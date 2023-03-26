@@ -23,7 +23,7 @@ export default function TimeTrendLineChart(props) {
   return (
     <React.Fragment>
       <Title>
-        Trends: {props.title}
+        Trends: {props.exercise} {props.title}
       </Title>
       <ResponsiveContainer>
         <LineChart
