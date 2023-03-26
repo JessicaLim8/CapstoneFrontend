@@ -26,8 +26,11 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Modal from '@mui/material/Modal';
 import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import { add, format, differenceInCalendarDays, isFuture } from "date-fns";
 import { mainListItems, secondaryListItems } from './listItems';
 import TimeTrendLineChart from './TimeTrendLineChart';
+import Title from './Title';
 import DetailedChart from './DetailedChart';
 import Summary from './Summary';
 import History from './History';
@@ -46,7 +49,9 @@ function Copyright(props) {
   );
 }
 
-const drawerWidth = 240;
+const drawerWidth = 0;
+
+
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -66,33 +71,7 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    '& .MuiDrawer-paper': {
-      position: 'relative',
-      whiteSpace: 'nowrap',
-      width: drawerWidth,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-      boxSizing: 'border-box',
-      ...(!open && {
-        overflowX: 'hidden',
-        transition: theme.transitions.create('width', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: theme.spacing(7),
-        [theme.breakpoints.up('sm')]: {
-          width: theme.spacing(9),
-        },
-      }),
-    },
-  }),
-);
-
-const style = {
+const modalStyle = {
   position: 'absolute',
   top: '50%',
   left: '50%',
@@ -140,6 +119,11 @@ const fetchExRecords = (userid, exercise, setExRecordLeft, setExRecordRight) => 
   });
 }
 
+const dateFormatter = date => {
+  const formatted = format(new Date(date), "MM/dd/yyyy");
+  return formatted;
+};
+
 function DashboardContent() {
   const [open, setOpen] = useState(false);
   const [userData, setUserData] = useState([]);
@@ -148,6 +132,7 @@ function DashboardContent() {
   const [exRecordDataRight, setExRecordRight] = useState([]);
   const [exRecordDataLeft, setExRecordLeft] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedHistory, setSelectedHistory] = useState([]);
 
   const handleModalOpen = () => setModalOpen(true);
 
@@ -165,6 +150,8 @@ function DashboardContent() {
 
   const handleChange = (event) => {
     setExercise(event.target.value);
+    fetchExRecords(userid, event.target.value, setExRecordLeft, setExRecordRight);
+      console.log(exRecordDataLeft)
   };
 
   const handleChangeUser = (row) => {
@@ -190,25 +177,7 @@ function DashboardContent() {
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <AppBar position="absolute" open={open}>
-          <Toolbar
-            sx={{
-              pr: '24px', // keep right padding when drawer closed
-            }}
-          >
-            { false &&
-              <IconButton
-                edge="start"
-                color="inherit"
-                aria-label="open drawer"
-                onClick={toggleDrawer}
-                sx={{
-                  marginRight: '36px',
-                  ...(open && { display: 'none' }),
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
-            }
+          <Toolbar >
             <Typography
               component="h1"
               variant="h6"
@@ -220,28 +189,6 @@ function DashboardContent() {
             </Typography>
           </Toolbar>
         </AppBar>
-        {false &&
-        <Drawer variant="permanent" open={open}>
-          <Toolbar
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              px: [1],
-            }}
-          >
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
-          <Divider />
-          <List component="nav">
-            {mainListItems}
-            <Divider sx={{ my: 1 }} />
-            {secondaryListItems}
-          </List>
-        </Drawer>
-        }
         <Box
           component="main"
           sx={{
@@ -261,7 +208,7 @@ function DashboardContent() {
                 onClose={handleModalClose}
                 disableBackdropClick
             > 
-                <Box sx={style}>
+                <Box sx={modalStyle}>
                     <IconButton onClick={() => handleModalClose()}>
                         <CloseIcon/>
                     </IconButton>
@@ -289,26 +236,21 @@ function DashboardContent() {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} md={3} xl={3}>
-                  <Button variant="outlined" onClick={() => setRecordURL(userid)}>Start Recording</Button>
+                  <Button variant="outlined" color="error" onClick={() => setRecordURL(userid)}>
+                    <FiberManualRecordIcon/>
+                    Start Recording
+                    </Button>
                 </Grid>
                 <Grid item xs={12} md={3} xl={3}>
                   <Button variant="contained" onClick={() => setModalOpen(true)}>Switch Athlete</Button>
                 </Grid>
               {/* Summary */}
               <Grid item xs={12} md={12} lg={12}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: 240,
-                  }}
-                >
-                  <Summary left={exRecordDataLeft.length != 0 ? exRecordDataLeft[0] : []} right={exRecordDataRight.length != 0 ? exRecordDataRight[0] : []}/>
-                </Paper>
+                <Title>
+                  Last Attempt: {exRecordDataLeft.length != 0  && exRecordDataLeft[exRecordDataLeft.length - 1].date ? dateFormatter(exRecordDataLeft[exRecordDataLeft.length - 1].date) : "N/A"}
+                </Title>
               </Grid>
-               {/* Last Datapoint */}
-               <Grid item xs={12} md={6} lg={6}>
+              <Grid item xs={12} md={6} lg={6}>
                 <Paper
                   sx={{
                     p: 2,
@@ -317,7 +259,7 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <DetailedChart exercise={exercise} left={exRecordDataLeft ? exRecordDataLeft[0] : []}/>
+                  <DetailedChart exercise={exercise} left={exRecordDataLeft ? exRecordDataLeft[exRecordDataLeft.length - 1] : []} showSummary = {true}/>
                 </Paper>
               </Grid>
               <Grid item xs={12} md={6} lg={6}>
@@ -329,10 +271,15 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <DetailedChart exercise={exercise} right={exRecordDataRight ? exRecordDataRight[0] : []}/>
+                  <DetailedChart exercise={exercise} right={exRecordDataRight ? exRecordDataRight[exRecordDataRight.length - 1] : []} showSummary = {true}/>
                 </Paper>
               </Grid>
-              {/* Max */}
+              {/* Trends*/}
+              <Grid item xs={12} md={12} lg={12}>
+                <Title>
+                  Athlete Trends
+                </Title>
+              </Grid>
               <Grid item xs={12} md={6}>
                 <Paper
                   sx={{
@@ -342,30 +289,39 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <TimeTrendLineChart title="Max Force" left={exRecordDataLeft} right={exRecordDataRight} dataKey="max"/>
+                  <TimeTrendLineChart title="Max Force" exercise={exercise} left={exRecordDataLeft} right={exRecordDataRight} dataKey="max"/>
                 </Paper>
               </Grid>
-              {/* Avg */}
-              <Grid item xs={12} md={6}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: 240,
-                  }}
-                >
-                  <TimeTrendLineChart title="Average Force" left={exRecordDataLeft} right={exRecordDataRight} dataKey="avg"/>
-                </Paper>
-              </Grid> 
-             
-             
-              {/* Recent Orders */}
+              {/* Details */}
               <Grid item xs={12}>
+                <Title>
+                 Historical Data 
+                </Title>
                 <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                  <History data={recordData} />
+                  <History data={recordData} setSelect={setSelectedHistory} />
                 </Paper>
               </Grid>
+              { selectedHistory.length !== 0 &&
+                <Grid item xs={12}>
+                  <Title>
+                  Detailed Charts
+                  </Title>
+                  {selectedHistory.map(record => (
+                    <Grid item xs={12} md={6} lg={6}>
+                     <Paper
+                       sx={{
+                         p: 2,
+                         display: 'flex',
+                         flexDirection: 'column',
+                         height: 240,
+                       }}
+                     >
+                        <DetailedChart exercise={record.exerciseType} right={record.side == "R" ? record : []} left={record.side == "L" ? record : []} showSummary = {true} showDate = {true} />
+                     </Paper>
+                   </Grid>
+                  ))}
+                </Grid>
+              }
             </Grid>
             <Copyright sx={{ pt: 4 }} />
           </Container>

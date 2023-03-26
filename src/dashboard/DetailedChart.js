@@ -2,25 +2,48 @@ import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
 import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import Title from './Title';
+import Typography from '@mui/material/Typography';
+import { add, format, differenceInCalendarDays, isFuture } from "date-fns";
 import { contentQuotesLinter } from '@ant-design/cssinjs/lib/linters';
 
 function createData(unformattedData) {
+ if (unformattedData && unformattedData.data) {
     const trendData = unformattedData.data.map(remap);
     return trendData;
+ }
+ return unformattedData 
 }
 
 function remap(force) {
     return {force};
 }
 
+const dateFormatter = date => {
+  const formatted = format(new Date(date), "MM/dd/yyyy");
+  return formatted;
+};
+
 export default function DetailedChart(props) {
   const theme = useTheme();
+  const leftProps = props.left && props.left.length !== 0;
+  const rightProps = props.right && props.right.length !== 0;
 
   return (
     <React.Fragment>
       <Title>
-        {props.left ? "Left" : "Right"} {props.exercise}
+        {leftProps ? "Left" : "Right"} {props.exercise}
       </Title>
+      {props.showDate && 
+        <Typography color="text.secondary" sx={{ flex: 1 }}>
+          {leftProps ? dateFormatter(props.left.date) : rightProps ? dateFormatter(props.right.date) : "--"}
+        </Typography>
+      }
+      {props.showSummary && 
+        <Typography color="text.secondary" sx={{ flex: 1 }}>
+          Max Force: {leftProps ? props.left.max + "N"  : rightProps ? props.right.max + "N" : "--"}
+        </Typography>
+      }
+
       <ResponsiveContainer>
         <LineChart
           margin={{
@@ -30,6 +53,9 @@ export default function DetailedChart(props) {
             left: 24,
           }}
         >
+          <Tooltip 
+            wrapperStyle={{fontSize: "1rem"}}
+          />
           <YAxis
             stroke={theme.palette.text.secondary}
             style={theme.typography.body2}
@@ -49,7 +75,7 @@ export default function DetailedChart(props) {
           <XAxis
             tick={false}
           />
-          {props.left != undefined && 
+          { leftProps && 
             <Line
               name="Left"
               data={createData(props.left)}
@@ -60,7 +86,7 @@ export default function DetailedChart(props) {
               dot={false}
             />
           }
-          {props.right != undefined && 
+          { rightProps && 
             <Line
               name="Right"
               data={createData(props.right)}

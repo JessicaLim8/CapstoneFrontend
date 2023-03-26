@@ -6,6 +6,8 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
+import { DataGrid, useGridApiRef, gridFilteredSortedRowIdsSelector, GridToolbarContainer, GridToolbarExport } from '@mui/x-data-grid';
+import Toolbar from '@mui/material/Toolbar';
 import Title from './Title';
 import { add, format, differenceInCalendarDays, isFuture } from "date-fns";
 
@@ -19,39 +21,57 @@ const dateFormatter = date => {
   return formatted;
 };
 
+const formatData = data => {
+  if (data != undefined) {
+    data.map(element => {
+      element.date = dateFormatter(element.date)
+    });
+  }
+  return data;
+};
+
+function CustomToolBar() {
+  return (
+    <GridToolbarContainer>
+      <GridToolbarExport />
+    </GridToolbarContainer>
+  );
+}
+
+const onRowsSelectionHandler = (ids, rows, setSelect) => {
+  const selectedRowsData = ids.map((id) => rows.find((row) => row._id === id));
+  setSelect(selectedRowsData)
+};
+
+const columns = [
+  { field: 'date', headerName: 'Date', width: 200 },
+  { field: 'max', headerName: 'Maximum', type: 'number', width: 100 },
+  { field: 'avg', headerName: 'Average', type: 'number', width: 100, },
+  { field: 'exerciseType', headerName: 'Exercise Type', width: 300, },
+  { field: 'side', headerName: 'Side', width: 160 },
+];
+
 export default function History(props) {
+  const apiRef = useGridApiRef();
+  const data = formatData(props.data);
+
   return (
     <React.Fragment>
-      <Title>History</Title>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Date</TableCell>
-            <TableCell>Max Value</TableCell>
-            <TableCell>Average Value</TableCell>
-            <TableCell>Exercise</TableCell>
-            <TableCell align="right">Side</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {props.data.map((row) => (
-            <TableRow key={row.id}>
-              <TableCell>
-                <Link color="primary" href="#" onClick={preventDefault} sx={{ m: 0, p: 0 }}>{dateFormatter(row.date)}</Link>
-              </TableCell>
-              <TableCell>{row.max} N</TableCell>
-              <TableCell>{row.avg} N</TableCell>
-              <TableCell>{row.exerciseType}</TableCell>
-              <TableCell align="right">{row.side}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 2 }}>
-        <Typography sx={{ flex: 1 }}>
-            See more History
-        </Typography>
-      </Link>
+      <div style={{ height: 400, width: '100%' }}>
+      <DataGrid
+        rows={data}
+        columns={columns}
+        pageSize={5}
+        rowsPerPageOptions={[5]}
+        checkboxSelection
+        getRowId={(row) => row._id}
+        components={{
+          Toolbar: CustomToolBar,
+        }}
+        disableMultipleSelection
+        onSelectionModelChange={(ids) => onRowsSelectionHandler(ids, data, props.setSelect)}
+      />
+      </div>
     </React.Fragment>
   );
 }
