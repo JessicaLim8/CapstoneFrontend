@@ -64,7 +64,7 @@ const modalStyle = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: 600,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -169,7 +169,7 @@ function DashboardContent() {
   const [open, setOpen] = useState(false);
   const [userData, setUserData] = useState([]);
   const [recordData, setRecordData] = useState([]);
-  const [exercise, setExercise] = useState('plantarflexion');
+  const [exercise, setExercise] = useState('Plantarflexion');
   const [exRecordDataRight, setExRecordRight] = useState([]);
   const [exRecordDataLeft, setExRecordLeft] = useState([]);
   const [modalOpen, setModalOpen] = useState(!(userid == true));
@@ -286,11 +286,11 @@ function DashboardContent() {
                       value={exercise}
                       label="Exercise"
                       onChange={handleChange}
-                      defaultValue="plantarflexion"
+                      defaultValue="Plantarflexion"
                     >
-                      <MenuItem value="plantarflexion">Plantarflexion</MenuItem>
-                      <MenuItem value="inversion">Inversion</MenuItem>
-                      <MenuItem value="eversion">Eversion</MenuItem>
+                      <MenuItem value="Plantarflexion">Plantarflexion</MenuItem>
+                      <MenuItem value="Inversion">Inversion</MenuItem>
+                      <MenuItem value="Eversion">Eversion</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>

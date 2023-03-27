@@ -73,7 +73,7 @@ function Admin(props) {
             setFirstN('');
             setLastN('');
             setSport('');
-            setYear(null);
+            setYear(0);
             setSex('');
         });
     }
@@ -257,6 +257,11 @@ function Admin(props) {
                                     label="Year"
                                     type="number"
                                     value={year}
+                                    InputProps={{
+                                        inputProps: { 
+                                            max: 10, min: 0 
+                                        }
+                                    }}
                                     onChange={(e) => setYear(e.target.value)}
                                 />
                             </Grid>
@@ -268,8 +273,8 @@ function Admin(props) {
                                         label="Sex"
                                         onChange={(e) => setSex(e.target.value)}
                                     >
-                                        <MenuItem value="F">F</MenuItem>
-                                        <MenuItem value="M">M</MenuItem>
+                                        <MenuItem value="F">Female</MenuItem>
+                                        <MenuItem value="M">Male</MenuItem>
                                         <MenuItem value="Other">Other</MenuItem>
                                     </Select>
                                 </FormControl>

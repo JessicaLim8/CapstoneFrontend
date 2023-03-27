@@ -5,7 +5,7 @@ export const dataMax = (data) => {
     const ids = data.map(object => {
         return object.max;
       });
-    return Math.max(...ids)
+    return Math.round(Math.max(...ids), 4)
 }
 
 export const dataAvg = (data) => {
@@ -15,5 +15,5 @@ export const dataAvg = (data) => {
     const ids = data.map(object => {
         return object.max;
       });
-    return Math.max(...ids) / data.length;
+    return Math.round((Math.max(...ids) / data.length), 4);
 }

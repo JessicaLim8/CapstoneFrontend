@@ -19,26 +19,14 @@ const fetchUsers = (setUsers) => {
 }
 
 const columns = [
-    { field: 'firstName', headerName: 'First Name'},
-    { field: 'lastName', headerName: 'Last Name'},
-    { field: 'sport', headerName: 'Sport'},
+    { field: 'firstName', headerName: 'First Name', width: 100 },
+    { field: 'lastName', headerName: 'Last Name', width: 150 },
+    { field: 'sport', headerName: 'Sport', width: 200 },
   ];
 
 const onRowSelect = (row, setRowSelect) => {
     window.location.href = "/users/"+row.id;
 };
-
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-  };
 
 function Users(props) {
     const [currentUsers, setUsers] = useState([]);
@@ -72,7 +60,6 @@ function Users(props) {
                         rows={currentUsers}
                         columns={columns}
                         onRowClick={props.onRowSelect ? props.onRowSelect : onRowSelect}
-                        width={700}
                     />
                 </div>
             }
