@@ -8,22 +8,13 @@ import Title from './Title';
 const dateFormatter = date => {
   return moment(date).format('DD/MM/YY');
 };
-
-const data = [
-  {"avg": 21, "date": 10},
-  {"avg": 21, "date": 12},
-  {"avg": 21, "date": 16},
-  {"avg": 21, "date": 10},
-  {"avg": 21, "date": 10},
-]
-
 export default function TimeTrendLineChart(props) {
   const theme = useTheme();
   
   return (
     <React.Fragment>
       <Title>
-        Trends: {props.exercise} {props.title}
+        Trends: {props.title} {props.exercise}
       </Title>
       <ResponsiveContainer>
         <LineChart

@@ -25,7 +25,7 @@ const columns = [
   ];
 
 const onRowSelect = (row, setRowSelect) => {
-    window.location.href(row.id);
+    window.location.href = "/users/"+row.id;
 };
 
 const style = {

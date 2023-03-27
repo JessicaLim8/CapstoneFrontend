@@ -34,7 +34,14 @@ import Title from './Title';
 import DetailedChart from './DetailedChart';
 import Summary from './Summary';
 import History from './History';
+import {dataMax} from "./utilities";
 import Users from './Users';
+import TeamComparison from './TeamComparison';
+
+var days = 86400000 //number of milliseconds in a day
+const dateNow = new Date();
+const dateLastWeek = new Date(dateNow - 7*days);
+const dateLastMonth = new Date(dateNow - 31*days);
 
 function Copyright(props) {
   return (
@@ -50,8 +57,6 @@ function Copyright(props) {
 }
 
 const drawerWidth = 0;
-
-
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -86,13 +91,16 @@ const modalStyle = {
 const mdTheme = createTheme();
 const localURL = "http://localhost:3000";
 
-const fetchUser = (userid, setUserData) => {
+const fetchUser = (userid, setUserData, fetchFunction) => {
   const userURL = `/users/${userid}`;
+  let user;
   axios.get(localURL + userURL).then(data => {
     if (data.data.user) {
+        fetchFunction(data.data.user.sport);
         setUserData(data.data.user)
     }
   });
+  return user;
 }
 
 const fetchRecords = (userid, setRecordData) => {
@@ -108,7 +116,7 @@ const fetchExRecords = (userid, exercise, setExRecordLeft, setExRecordRight) => 
   const leftURL = `/records?userId=${userid}&exercise=${exercise}&side=L`;
   axios.get(localURL + leftURL).then(data => {
     if (data.data.records) {
-        setExRecordLeft(data.data.records)
+        setExRecordLeft(data.data.records);
     }
   });
   const rightURL = `/records?userId=${userid}&exercise=${exercise}&side=R`;
@@ -116,6 +124,47 @@ const fetchExRecords = (userid, exercise, setExRecordLeft, setExRecordRight) => 
     if (data.data.records) {
         setExRecordRight(data.data.records)
     }
+  });
+}
+
+const groupRecords = (userid, sport, exercise, setUserWeek, setGroupWeek, setUserMonth, setGroupMonth) => {
+  const userWeekURL = `/records?userId=${userid}&exercise=${exercise}&dateStart=${dateLastWeek}`;
+  axios.get(localURL + userWeekURL + "&side=L").then(data => {
+    const userWeek = {};
+    if (data.data.records) { userWeek["L"] = data.data.records; }
+    axios.get(localURL + userWeekURL + "&side=R").then(data => {
+      if (data.data.records) { userWeek["R"] = data.data.records; }
+      setUserWeek(userWeek)
+    });
+  });
+
+  const userMonthURL = `/records?userId=${userid}&exercise=${exercise}&dateStart=${dateLastMonth}`;
+  axios.get(localURL + userMonthURL + "&side=L").then(data => {
+    const userMonth = {};
+    if (data.data.records) { userMonth["L"] = data.data.records; }
+    axios.get(localURL + userMonthURL + "&side=R").then(data => {
+      if (data.data.records) { userMonth["R"] = data.data.records; }
+      setUserMonth(userMonth)
+    });
+  });
+
+  const groupWeekURL = `/records?sport=${sport}&exercise=${exercise}&dateStart=${dateLastWeek}`;
+  axios.get(localURL + groupWeekURL + "&side=L").then(data => {
+    const groupWeek = {};
+    if (data.data.records) { groupWeek["L"] = data.data.records; }
+    axios.get(localURL + groupWeekURL + "&side=R").then(data => {
+      if (data.data.records) { groupWeek["R"] = data.data.records; }
+      setGroupWeek(groupWeek)
+    });
+  });
+  const groupMonthURL = `/records?sport=${sport}&exercise=${exercise}&dateStart=${dateLastMonth}`;
+  axios.get(localURL + groupMonthURL + "&side=L").then(data => {
+    const groupMonth = {};
+    if (data.data.records) { groupMonth["L"] = data.data.records; }
+    axios.get(localURL + groupMonthURL + "&side=R").then(data => {
+      if (data.data.records) { groupMonth["R"] = data.data.records; }
+      setGroupMonth(groupMonth)
+    });
   });
 }
 
@@ -133,6 +182,10 @@ function DashboardContent() {
   const [exRecordDataLeft, setExRecordLeft] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedHistory, setSelectedHistory] = useState([]);
+  const [userWeek, setUserWeek] = useState({});
+  const [userMonth, setUserMonth] = useState({});
+  const [groupWeek, setGroupWeek] = useState({});
+  const [groupMonth, setGroupMonth] = useState({});
 
   const handleModalOpen = () => setModalOpen(true);
 
@@ -151,7 +204,7 @@ function DashboardContent() {
   const handleChange = (event) => {
     setExercise(event.target.value);
     fetchExRecords(userid, event.target.value, setExRecordLeft, setExRecordRight);
-      console.log(exRecordDataLeft)
+    groupRecords(userid, userData.sport, exercise, setUserWeek, setGroupWeek, setUserMonth, setGroupMonth)
   };
 
   const handleChangeUser = (row) => {
@@ -167,7 +220,11 @@ function DashboardContent() {
   useEffect(() => {
     // call an API and in the success or failure fill the data buy using setData function
     // it could be like below
-    fetchUser(userid, setUserData);
+    const groupRecordFetch = (sport) => {
+      groupRecords(userid, sport, exercise, setUserWeek, setGroupWeek, setUserMonth, setGroupMonth)
+    }
+
+    fetchUser(userid, setUserData, groupRecordFetch);
     fetchRecords(userid, setRecordData);
     fetchExRecords(userid, exercise, setExRecordLeft, setExRecordRight);
   }, []);
@@ -208,12 +265,12 @@ function DashboardContent() {
                 onClose={handleModalClose}
                 disableBackdropClick
             > 
-                <Box sx={modalStyle}>
-                    <IconButton onClick={() => handleModalClose()}>
-                        <CloseIcon/>
-                    </IconButton>
-                    <Users onRowSelect={handleChangeUser} />
-                </Box>
+              <Box sx={modalStyle}>
+                <IconButton onClick={() => handleModalClose()}>
+                    <CloseIcon/>
+                </IconButton>
+                <Users onRowSelect={handleChangeUser} />
+              </Box>
           </Modal>
 
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -247,6 +304,37 @@ function DashboardContent() {
               {/* Summary */}
               <Grid item xs={12} md={12} lg={12}>
                 <Title>
+                  Athlete Profile
+                </Title>
+              </Grid>
+              <Grid item xs={12} md={12} lg={12}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 180,
+                  }}
+                >
+                  <Summary user={userData} maxWeek={userWeek} maxMonth={userMonth}/>
+                </Paper>
+              </Grid>
+              {/* Trends*/}
+              <Grid item xs={12} md={12}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 240,
+                  }}
+                >
+                  <TimeTrendLineChart title="Max Force" exercise={exercise} left={exRecordDataLeft} right={exRecordDataRight} dataKey="max"/>
+                </Paper>
+              </Grid>
+              {/* Last Attempt */}
+              <Grid item xs={12} md={12} lg={12}>
+                <Title>
                   Last Attempt: {exRecordDataLeft.length != 0  && exRecordDataLeft[exRecordDataLeft.length - 1].date ? dateFormatter(exRecordDataLeft[exRecordDataLeft.length - 1].date) : "N/A"}
                 </Title>
               </Grid>
@@ -274,24 +362,26 @@ function DashboardContent() {
                   <DetailedChart exercise={exercise} right={exRecordDataRight ? exRecordDataRight[exRecordDataRight.length - 1] : []} showSummary = {true}/>
                 </Paper>
               </Grid>
-              {/* Trends*/}
+
+              {/* Summary */}
               <Grid item xs={12} md={12} lg={12}>
                 <Title>
-                  Athlete Trends
+                  Team Summary: {userData.sport}
                 </Title>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={12} lg={12}>
                 <Paper
                   sx={{
                     p: 2,
                     display: 'flex',
                     flexDirection: 'column',
-                    height: 240,
+                    height: 180,
                   }}
                 >
-                  <TimeTrendLineChart title="Max Force" exercise={exercise} left={exRecordDataLeft} right={exRecordDataRight} dataKey="max"/>
+                  <TeamComparison user={userData} maxWeek={userWeek} maxMonth={userMonth} teamWeek={groupWeek} teamMonth={groupMonth}/>
                 </Paper>
               </Grid>
+
               {/* Details */}
               <Grid item xs={12}>
                 <Title>
