@@ -13,7 +13,7 @@ function App() {
           <Routes>
             <Route exact path='/' element={<Dashboard/>}></Route>
             <Route exact path='/admin' element={<Admin/>}></Route>
-            <Route exact path='/users' element={<Users/>}></Route>
+            <Route exact path='/users' element={<Dashboard/>}></Route>
             <Route path='/users/:userid' element={<Dashboard/>}></Route>
             <Route path='/record/:userid' element={<RecordData/>}></Route>
           </Routes>

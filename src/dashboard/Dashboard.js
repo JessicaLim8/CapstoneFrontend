@@ -27,6 +27,7 @@ import Modal from '@mui/material/Modal';
 import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import { add, format, differenceInCalendarDays, isFuture } from "date-fns";
 import { mainListItems, secondaryListItems } from './listItems';
 import TimeTrendLineChart from './TimeTrendLineChart';
@@ -163,13 +164,15 @@ const dateFormatter = date => {
 };
 
 function DashboardContent() {
+  const { userid } = useParams();
+
   const [open, setOpen] = useState(false);
   const [userData, setUserData] = useState([]);
   const [recordData, setRecordData] = useState([]);
   const [exercise, setExercise] = useState('plantarflexion');
   const [exRecordDataRight, setExRecordRight] = useState([]);
   const [exRecordDataLeft, setExRecordLeft] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(!(userid == true));
   const [selectedHistory, setSelectedHistory] = useState([]);
   const [userWeek, setUserWeek] = useState({});
   const [userMonth, setUserMonth] = useState({});
@@ -200,22 +203,26 @@ function DashboardContent() {
     window.location.href = "/users/"+row.id;
   };
 
+  const handleEditButton = () => {
+    window.location.href = "/admin";
+  };
+
   const setRecordURL = (userid) => {
     window.location.href = "/record/"+userid;
   };
-
-  const { userid } = useParams();
   
   useEffect(() => {
     // call an API and in the success or failure fill the data buy using setData function
     // it could be like below
-    const groupRecordFetch = (sport) => {
-      groupRecords(userid, sport, exercise, setUserWeek, setGroupWeek, setUserMonth, setGroupMonth)
-    }
+    if (userid) {
+      const groupRecordFetch = (sport) => {
+        groupRecords(userid, sport, exercise, setUserWeek, setGroupWeek, setUserMonth, setGroupMonth)
+      }
 
-    fetchUser(userid, setUserData, groupRecordFetch);
-    fetchRecords(userid, setRecordData);
-    fetchExRecords(userid, exercise, setExRecordLeft, setExRecordRight);
+      fetchUser(userid, setUserData, groupRecordFetch);
+      fetchRecords(userid, setRecordData);
+      fetchExRecords(userid, exercise, setExRecordLeft, setExRecordRight);
+    }
   }, []);
 
   return (
@@ -233,6 +240,9 @@ function DashboardContent() {
             >
               {userData.firstName} {userData.lastName}'s Profile
             </Typography>
+            <IconButton onClick={() => handleEditButton()}>
+              <ModeEditIcon/>
+            </IconButton>
           </Toolbar>
         </AppBar>
         <Box
@@ -256,9 +266,11 @@ function DashboardContent() {
                 disableBackdropClick
             > 
               <Box sx={modalStyle}>
-                <IconButton onClick={() => handleModalClose()}>
-                    <CloseIcon/>
-                </IconButton>
+                { userid &&
+                  <IconButton onClick={() => handleModalClose()}>
+                      <CloseIcon/>
+                  </IconButton>
+                }
                 <Users onRowSelect={handleChangeUser} />
               </Box>
           </Modal>

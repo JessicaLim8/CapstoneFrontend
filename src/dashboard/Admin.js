@@ -15,7 +15,9 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Title from './Title';
+import { IconButton } from '@mui/material';
 
 const mdTheme = createTheme();
 const localURL = "http://localhost:3000";
@@ -37,6 +39,10 @@ const AppBar = styled(MuiAppBar, {
     zIndex: theme.zIndex.drawer + 1,
     width: '100vw',
 }));
+
+const handleBackDashboard = () => {
+    window.location.href = "/";
+  };
 
 function Admin(props) {
     const [dataType, setDataType] = useState('athlete');
@@ -98,6 +104,9 @@ function Admin(props) {
                 <CssBaseline />
                 <AppBar position="absolute">
                   <Toolbar >
+                    <IconButton onClick={() => handleBackDashboard()}>
+                        <ArrowBackIosIcon/>
+                    </IconButton>
                     <Typography
                       component="h1"
                       variant="h6"
@@ -145,7 +154,7 @@ function Admin(props) {
                         <Grid item xs={12} md={3} xl={3}>
                         </Grid>
                         <Grid item xs={12} md={3} xl={3}>
-                          <Button variant="contained" onClick={() => console.log()}>Return to Dashboard</Button>
+                          <Button variant="contained" onClick={() => handleBackDashboard()}>Return to Dashboard</Button>
                         </Grid>
                     </Grid>
                     <Paper
