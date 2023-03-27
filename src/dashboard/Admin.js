@@ -20,12 +20,12 @@ import Title from './Title';
 const mdTheme = createTheme();
 const localURL = "http://localhost:3000";
 
+const coachName = ['Dylan Whitbread', 'Jon Brown', 'Stuart Maxwell', 'Ben Bahrami']
 
 const fetchSports = (setFetchedSports) => {
     const sportsURL = `/sports`;
     axios.get(localURL + sportsURL).then(data => {
       if (data.data.sport) {
-        console.log(data.data.sport);
         setFetchedSports(data.data.sport);
       }
     });
@@ -46,6 +46,9 @@ function Admin(props) {
     const [year, setYear] = useState(null);
     const [sex, setSex] = useState('');
     const [fetchedSports, setFetchedSports] = useState([]);
+    const [sportName, setSportName] = useState('');
+    const [sportDesc, setSportDesc] = useState('');
+    const [coach, setCoach] = useState('');
 
     const handleDataChange = (event) => {
         setDataType(event.target.value);
@@ -60,13 +63,25 @@ function Admin(props) {
             sport: sport,
             sex: sex
         }
-        console.log(json)
         axios.post(localURL + usersURL, json).then(_ => {
             setFirstN('');
             setLastN('');
             setSport('');
             setYear(null);
             setSex('');
+        });
+    }
+
+    const postSport = () => {
+        const sportsURL = `/sports`;
+        const json = {
+            sport: sportName,
+            coach: coach,
+        }
+        axios.post(localURL + sportsURL, json).then(_ => {
+            setSportName('');
+            setSportDesc('');
+            setCoach('');
         });
     }
 
@@ -124,7 +139,6 @@ function Admin(props) {
                             >
                                 <MenuItem value="athlete">Athlete</MenuItem>
                                 <MenuItem value="sport">Sport</MenuItem>
-                                <MenuItem value="exercise">Exercise</MenuItem>
                             </Select>
                           </FormControl>
                         </Grid>
@@ -143,6 +157,52 @@ function Admin(props) {
                             mt: '20px'
                         }}
                     >
+                    {dataType == "sport" &&
+                        <Grid container spacing={3}>
+                            <Grid item xs={6} md={6}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="sport"
+                                    label="Sport"
+                                    value={sportName}
+                                    onChange={(e) => setSportName(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={6} md={6} xl={6}>
+                                <FormControl fullWidth required>
+                                    <InputLabel>Coach</InputLabel>
+                                    <Select
+                                        value={coach}
+                                        label="Coach"
+                                        onChange={(e) => setCoach(e.target.value)}
+                                    >
+                                        {coachName.map((c) => <MenuItem value={c}>{c}</MenuItem>)}
+                                        <MenuItem value="Other">Other</MenuItem>
+                                        <MenuItem value="NA">N/A</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} md={12}>
+                                <TextField
+                                    fullWidth
+                                    id="desc"
+                                    label="Description"
+                                    value={sportDesc}
+                                    onChange={(e) => setSportDesc(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={12} xl={12}>
+                                <Button 
+                                    color="primary"
+                                    variant="contained"  
+                                    disabled={!(sportName && coach)}
+                                    onClick={() => postSport()}>
+                                        Create {dataType}
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    }
                     {dataType == "athlete" &&
                         <Grid container spacing={3}>
                             <Grid item xs={6} md={6}>
@@ -210,7 +270,7 @@ function Admin(props) {
                                     color="primary"
                                     variant="contained"  
                                     disabled={!(firstN && lastN && sport && sex && year)}
-                                    onClick={() => postAthlete(firstN, lastN, year, sex, sport)}>
+                                    onClick={() => postAthlete()}>
                                         Create {dataType}
                                 </Button>
                             </Grid>
