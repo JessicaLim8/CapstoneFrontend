@@ -58,24 +58,6 @@ function Copyright(props) {
 
 const drawerWidth = 0;
 
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(['width', 'margin'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
-
 const modalStyle = {
   position: 'absolute',
   top: '50%',
@@ -88,6 +70,13 @@ const modalStyle = {
   p: 4,
 };
 
+const AppBar = styled(MuiAppBar, {
+    shouldForwardProp: (prop) => prop !== 'open',
+  })(({ theme, open }) => ({
+    zIndex: theme.zIndex.drawer + 1,
+    width: '100vw',
+}));
+
 const mdTheme = createTheme();
 const localURL = "http://localhost:3000";
 
@@ -96,8 +85,8 @@ const fetchUser = (userid, setUserData, fetchFunction) => {
   let user;
   axios.get(localURL + userURL).then(data => {
     if (data.data.user) {
+        setUserData(data.data.user);
         fetchFunction(data.data.user.sport);
-        setUserData(data.data.user)
     }
   });
   return user;
@@ -202,9 +191,9 @@ function DashboardContent() {
   };
 
   const handleChange = (event) => {
-    setExercise(event.target.value);
     fetchExRecords(userid, event.target.value, setExRecordLeft, setExRecordRight);
-    groupRecords(userid, userData.sport, exercise, setUserWeek, setGroupWeek, setUserMonth, setGroupMonth)
+    groupRecords(userid, userData.sport, event.target.value, setUserWeek, setGroupWeek, setUserMonth, setGroupMonth)
+    setExercise(event.target.value);
   };
 
   const handleChangeUser = (row) => {
@@ -233,7 +222,7 @@ function DashboardContent() {
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBar position="absolute" open={open}>
+        <AppBar position="absolute">
           <Toolbar >
             <Typography
               component="h1"
@@ -256,6 +245,7 @@ function DashboardContent() {
             flexGrow: 1,
             height: '100vh',
             overflow: 'auto',
+            width: '100vw',
           }}
         >
           <Toolbar />
@@ -273,7 +263,7 @@ function DashboardContent() {
               </Box>
           </Modal>
 
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          <Container sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
                 <Grid item xs={12} md={6} xl={6}>
                   <FormControl fullWidth>
