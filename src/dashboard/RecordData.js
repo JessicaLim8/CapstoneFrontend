@@ -14,6 +14,7 @@ import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -37,24 +38,6 @@ function Copyright(props) {
       </Typography>
     );
   }
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(['width', 'margin'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
 
 const style = {
   position: 'absolute',
@@ -103,6 +86,13 @@ const fetchExRecords = (userid, exercise, setExRecordLeft, setExRecordRight) => 
     }
   });
 }
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  width: '100vw',
+}));
 
 export default function RecordData() {
   const [open, setOpen] = useState(false);
@@ -171,6 +161,20 @@ export default function RecordData() {
             </Typography>
           </Toolbar>
         </AppBar>
+        <Box
+          component="main"
+          sx={{
+            backgroundColor: (theme) =>
+              theme.palette.mode === 'light'
+                ? theme.palette.grey[100]
+                : theme.palette.grey[900],
+            flexGrow: 1,
+            height: '100vh',
+            overflow: 'auto',
+            width: '100vw',
+          }}
+        >
+          <Toolbar />
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3} sx={{ mt: 4, mb: 4 }}>
                 <Grid item xs={8} md={6} xl={6}>
@@ -205,7 +209,10 @@ export default function RecordData() {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} md={12} xl={12}>
-                  <Button variant="outlined" onClick={() => console.log("Start Recording")}>Record</Button>
+                  <Button variant="outlined" color="error" onClick={() => console.log()}>
+                    <FiberManualRecordIcon/>
+                    Start Recording
+                  </Button>
                 </Grid>
             </Grid>
             <Grid container spacing={3}>
@@ -232,6 +239,7 @@ export default function RecordData() {
             </Grid>
             <Copyright sx={{ pt: 4 }} />
           </Container>
+      </Box>
       </Box>
     </ThemeProvider>
   );
