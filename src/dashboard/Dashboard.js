@@ -163,8 +163,7 @@ const dateFormatter = date => {
   return formatted;
 };
 
-function DashboardContent() {
-  const { userid } = useParams();
+export default function Dashboard(props) {
 
   const [open, setOpen] = useState(false);
   const [userData, setUserData] = useState([]);
@@ -172,7 +171,7 @@ function DashboardContent() {
   const [exercise, setExercise] = useState('Plantarflexion');
   const [exRecordDataRight, setExRecordRight] = useState([]);
   const [exRecordDataLeft, setExRecordLeft] = useState([]);
-  const [modalOpen, setModalOpen] = useState(!(userid == true));
+  const [modalOpen, setModalOpen] = useState(false);
   const [selectedHistory, setSelectedHistory] = useState([]);
   const [userWeek, setUserWeek] = useState({});
   const [userMonth, setUserMonth] = useState({});
@@ -180,6 +179,8 @@ function DashboardContent() {
   const [groupMonth, setGroupMonth] = useState({});
 
   const handleModalOpen = () => setModalOpen(true);
+
+  const { userid } = useParams();
 
   const handleModalClose = (event, reason) => 
   {
@@ -222,6 +223,8 @@ function DashboardContent() {
       fetchUser(userid, setUserData, groupRecordFetch);
       fetchRecords(userid, setRecordData);
       fetchExRecords(userid, exercise, setExRecordLeft, setExRecordRight);
+    } else {
+      setModalOpen(true)
     }
   }, []);
 
@@ -421,8 +424,4 @@ function DashboardContent() {
       </Box>
     </ThemeProvider>
   );
-}
-
-export default function Dashboard() {
-  return <DashboardContent />;
 }
