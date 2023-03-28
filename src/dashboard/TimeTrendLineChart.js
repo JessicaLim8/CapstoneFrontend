@@ -8,9 +8,42 @@ import Title from './Title';
 const dateFormatter = date => {
   return moment(date).format('DD/MM/YY');
 };
+
+const epochData = data => {
+  if (!data || data.length == 0) return [];
+  else {
+    data.forEach(d => {
+      d.date = moment(d.date).valueOf(); // date -> epoch
+    });
+    return data;
+  }
+}
+
+const calculateDomain = (leftData, rightData) => {
+  let domainL, domainR;
+  if (leftData && leftData.length !== 0) {
+    domainL = [leftData[0].date, leftData[leftData.length - 1].date]
+
+    if (rightData && rightData.length !== 0) {
+      domainR =  [rightData[0].date, rightData[rightData.length - 1].date]
+      const updatedDomain = [Math.min(domainL[0], domainR[0]), Math.max(domainL[1], domainR[1])];
+
+      return updatedDomain;
+    }
+
+    return domainL;
+  }
+  if (rightData && rightData.length !== 0) {
+    domainR =  [rightData[0].date, rightData[rightData.length - 1].date]
+    return domainR;
+  }
+  return [];
+}
+
+
 export default function TimeTrendLineChart(props) {
   const theme = useTheme();
-  
+
   return (
     <React.Fragment>
       <Title>
@@ -30,7 +63,8 @@ export default function TimeTrendLineChart(props) {
             stroke={theme.palette.text.secondary}
             style={theme.typography.body2}
             tickFormatter={dateFormatter}
-
+            domain={() => calculateDomain(props.left, props.right)}
+            type="number"
           />
           <YAxis
             stroke={theme.palette.text.secondary}
@@ -57,7 +91,7 @@ export default function TimeTrendLineChart(props) {
           {props.left &&
             <Line
               name="Left"
-              data={props.left}
+              data={epochData(props.left)}
               isAnimationActive={false}
               type="monotone"
               dataKey={props.dataKey}
@@ -67,7 +101,7 @@ export default function TimeTrendLineChart(props) {
           {props.right &&
             <Line
               name="Right"
-              data={props.right}
+              data={epochData(props.right)}
               isAnimationActive={false}
               type="monotone"
               dataKey={props.dataKey}
