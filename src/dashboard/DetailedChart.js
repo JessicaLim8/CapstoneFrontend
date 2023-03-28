@@ -25,8 +25,8 @@ const dateFormatter = date => {
 
 export default function DetailedChart(props) {
   const theme = useTheme();
-  const leftProps = props.left && props.left.length !== 0;
-  const rightProps = props.right && props.right.length !== 0;
+  const leftProps = props.left;
+  const rightProps = props.right;
 
   return (
     <React.Fragment>

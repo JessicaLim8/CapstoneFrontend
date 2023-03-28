@@ -19,10 +19,10 @@ export default function TeamComparison(props) {
                   Left
                 </Typography>
                 <Typography color="text.secondary" component="h6" variant="h6">
-                  Week: {props.maxWeek && props.maxWeek.L ? dataMax(props.maxWeek.L) : "--"}
+                  Week: {props.maxWeek && props.maxWeek.L ? dataMax(props.maxWeek.L) + " N" : "--"}
                 </Typography>
                 <Typography color="text.secondary" component="h6" variant="h6">
-                  Month: {props.maxMonth && props.maxMonth.L ? dataMax(props.maxMonth.L) : "--"}
+                  Month: {props.maxMonth && props.maxMonth.L ? dataMax(props.maxMonth.L) + " N" : "--"}
                 </Typography>
               </Grid>
               <Grid item xs={6}>
@@ -30,10 +30,10 @@ export default function TeamComparison(props) {
                   Right
                 </Typography>
                 <Typography color="text.secondary" component="h6" variant="h6">
-                  Week: {props.maxWeek && props.maxWeek && props.maxWeek.R ? dataMax(props.maxWeek.R) : "--"}
+                  Week: {props.maxWeek && props.maxWeek && props.maxWeek.R ? dataMax(props.maxWeek.R) + " N" : "--"}
                 </Typography>
                 <Typography color="text.secondary" component="h6" variant="h6">
-                  Month: {props.maxMonth && props.maxMonth.R ? dataMax(props.maxMonth.R) : "--"}
+                  Month: {props.maxMonth && props.maxMonth.R ? dataMax(props.maxMonth.R) + " N" : "--"}
                 </Typography>
               </Grid>
               </Grid>
@@ -48,10 +48,10 @@ export default function TeamComparison(props) {
                   Left
                 </Typography>
                 <Typography color="text.secondary" component="h6" variant="h6">
-                  Week: {props.teamWeek && props.teamWeek.L ? dataMax(props.teamWeek.L) : "--"}
+                  Week: {props.teamWeek && props.teamWeek.L ? dataMax(props.teamWeek.L) + " N" : "--"}
                 </Typography>
                 <Typography color="text.secondary" component="h6" variant="h6">
-                  Month: {props.teamMonth && props.teamMonth.L ? dataMax(props.teamMonth.L) : "--"}
+                  Month: {props.teamMonth && props.teamMonth.L ? dataMax(props.teamMonth.L) + " N" : "--"}
                 </Typography>
               </Grid>
               <Grid item xs={6}>
@@ -59,10 +59,10 @@ export default function TeamComparison(props) {
                   Right
                 </Typography>
                 <Typography color="text.secondary" component="h6" variant="h6">
-                  Week: {props.teamWeek && props.teamWeek && props.teamWeek.R ? dataMax(props.teamWeek.R) : "--"}
+                  Week: {props.teamWeek && props.teamWeek && props.teamWeek.R ? dataMax(props.teamWeek.R) + " N" : "--"}
                 </Typography>
                 <Typography color="text.secondary" component="h6" variant="h6">
-                  Month: {props.teamMonth && props.teamMonth.R ? dataMax(props.teamMonth.R) : "--"}
+                  Month: {props.teamMonth && props.teamMonth.R ? dataMax(props.teamMonth.R) + " N" : "--"}
                 </Typography>
               </Grid>
               </Grid>
@@ -77,10 +77,10 @@ export default function TeamComparison(props) {
                   Left
                 </Typography>
                 <Typography color="text.secondary" component="h6" variant="h6">
-                  Week: {props.teamWeek && props.teamWeek.L ? dataAvg(props.teamWeek.L) : "--"}
+                  Week: {props.teamWeek && props.teamWeek.L ? dataAvg(props.teamWeek.L) + " N" : "--"}
                 </Typography>
                 <Typography color="text.secondary" component="h6" variant="h6">
-                  Month: {props.teamMonth && props.teamMonth.L ? dataAvg(props.teamMonth.L) : "--"}
+                  Month: {props.teamMonth && props.teamMonth.L ? dataAvg(props.teamMonth.L) + " N" : "--"}
                 </Typography>
               </Grid>
               <Grid item xs={6}>
@@ -88,10 +88,10 @@ export default function TeamComparison(props) {
                   Right
                 </Typography>
                 <Typography color="text.secondary" component="h6" variant="h6">
-                  Week: {props.teamWeek && props.teamWeek && props.teamWeek.R ? dataAvg(props.teamWeek.R) : "--"}
+                  Week: {props.teamWeek && props.teamWeek && props.teamWeek.R ? dataAvg(props.teamWeek.R) + " N" : "--"}
                 </Typography>
                 <Typography color="text.secondary" component="h6" variant="h6">
-                  Month: {props.teamMonth && props.teamMonth.R ? dataAvg(props.teamMonth.R) : "--"}
+                  Month: {props.teamMonth && props.teamMonth.R ? dataAvg(props.teamMonth.R) + " N" : "--"}
                 </Typography>
               </Grid>
               </Grid>
