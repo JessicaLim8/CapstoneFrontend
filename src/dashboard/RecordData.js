@@ -11,9 +11,6 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Link from '@mui/material/Link';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -22,7 +19,10 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Modal from '@mui/material/Modal';
 import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { IconButton } from '@mui/material';
 import DetailedChart from './DetailedChart';
+import Users from './Users';
 
 const drawerWidth = 240;
 
@@ -39,12 +39,18 @@ function Copyright(props) {
     );
   }
 
-const style = {
+const instructions = {
+  plantarflexion: <div> Sit facing the device with the <b> sole (back) </b> of your foot against the foam pad. </div>,
+  eversion: <div> Sit to the side of the device with the <b> outside </b> of your foot against the foam pad. </div>,
+  inversion: <div> Sit to the side of the device with the <b> inside </b> of your foot against the foam pad. </div>,
+}
+
+const modalStyle = {
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: 600,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -126,10 +132,13 @@ export default function RecordData() {
     setSide(event.target.value);
   };
 
-  const setUserURL = (userid) => {
+  const handleBackDashboard = () => {
     window.location.href = "/users/"+userid;
   };
 
+  const handleChangeUser = (row) => {
+    window.location.href = "/record/"+row.id;
+  };
   const { userid } = useParams();
   
   useEffect(() => {
@@ -150,6 +159,9 @@ export default function RecordData() {
               pr: '24px', // keep right padding when drawer closed
             }}
           >
+            <IconButton onClick={() => handleBackDashboard()}>
+                <ArrowBackIosIcon/>
+            </IconButton>
             <Typography
               component="h1"
               variant="h6"
@@ -175,8 +187,28 @@ export default function RecordData() {
           }}
         >
           <Toolbar />
+          <Modal
+                open={modalOpen}
+                onClose={handleModalClose}
+                disableBackdropClick
+            > 
+              <Box sx={modalStyle}>
+                { userid &&
+                  <IconButton onClick={() => handleModalClose()}>
+                      <CloseIcon/>
+                  </IconButton>
+                }
+                <Users onRowSelect={handleChangeUser} />
+              </Box>
+          </Modal>
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3} sx={{ mt: 4, mb: 4 }}>
+                <Grid item xs={6} md={6} xl={6}>
+                    <Button variant="outlined" onClick={() => handleBackDashboard()}>Return to Dashboard</Button>
+                </Grid>
+                <Grid item xs={6} md={6} xl={6}>
+                    <Button variant="contained" onClick={() => setModalOpen(true)}>Switch Athlete</Button>
+                </Grid>
                 <Grid item xs={8} md={6} xl={6}>
                   <FormControl fullWidth>
                     <InputLabel id="select-label">Exercise</InputLabel>
@@ -209,6 +241,17 @@ export default function RecordData() {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} md={12} xl={12}>
+                <Typography
+                  component="h6"
+                  variant="h6"
+                  color="text.secondary"
+                  noWrap
+                  sx={{ flexGrow: 1, fontSize: "0.6em" }}
+                >
+                  <b>Instructions:</b> {instructions[exercise]} Adjust the height to center the metatarsals (area just below your toes) on the pad.
+                </Typography>
+                </Grid>
+                <Grid item xs={12} md={12} xl={12}>
                   <Button variant="outlined" color="error" onClick={() => console.log()}>
                     <FiberManualRecordIcon/>
                     Start Recording
@@ -225,16 +268,9 @@ export default function RecordData() {
                         height: 240,
                     }}
                     >
-                        <DetailedChart exercise={exercise} right={[]}/>
+                        {side == "left" && <DetailedChart exercise={exercise} left={[]}/>}
+                        {side == "right" && <DetailedChart exercise={exercise} right={[]}/>}
                     </Paper>
-                </Grid>
-            </Grid>
-            <Grid container spacing={3} sx={{ mt: 4, mb: 4 }}>
-                <Grid item xs={6} md={6} xl={6}>
-                    <Button variant="contained" onClick={() => setModalOpen(true)}>Switch Athlete</Button>
-                </Grid>
-                <Grid item xs={6} md={6} xl={6}>
-                    <Button variant="contained" onClick={() => setUserURL(userid)}>Return to Dashboard</Button>
                 </Grid>
             </Grid>
             <Copyright sx={{ pt: 4 }} />
