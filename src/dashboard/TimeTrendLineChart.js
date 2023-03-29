@@ -15,8 +15,19 @@ const epochData = data => {
     data.forEach(d => {
       d.date = moment(d.date).valueOf(); // date -> epoch
     });
-    return data;
+    return data.sort(compare);
   }
+}
+
+function compare( a, b ) {
+  if (!a || !b || !a.date || !b.date) return 0;
+  if ( a.date < b.date ){
+    return -1;
+  }
+  if ( a.date > b.date ){
+    return 1;
+  }
+  return 0;
 }
 
 const calculateDomain = (leftData, rightData) => {
