@@ -31,7 +31,7 @@ import React from 'react';
 import io from 'socket.io-client'
 //import { useEffect, useState } from 'react';
 
-//import SensorChart from './SensorChart';
+import SensorChart from './SensorChart';
 //import LoadCellChart from './LoadCellChart';
 
 import {
@@ -339,10 +339,15 @@ export default function RecordData() {
                 </Typography>
                 </Grid>
                 <Grid item xs={12} md={12} xl={12}>
-                  <Button variant="outlined" color="error" onClick={() => console.log()}>
+                  <Button variant="outlined" color="error" onClick={sendMessage}>
                     <FiberManualRecordIcon/>
-                    Start Recording
+                    TOGGLE SENSOR RECORDING
                   </Button>
+                  <SensorChart
+                  options={options}
+                  data={data}
+                  redraw={true}
+                />
                 </Grid>
             </Grid>
             <Grid container spacing={3}>
