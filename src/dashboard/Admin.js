@@ -154,7 +154,7 @@ function Admin(props) {
                         <Grid item xs={12} md={3} xl={3}>
                         </Grid>
                         <Grid item xs={12} md={3} xl={3}>
-                          <Button variant="contained" onClick={() => handleBackDashboard()}>Return to Dashboard</Button>
+                          <Button variant="outlined" onClick={() => handleBackDashboard()}>Return to Dashboard</Button>
                         </Grid>
                     </Grid>
                     <Paper
