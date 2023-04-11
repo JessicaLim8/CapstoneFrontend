@@ -311,7 +311,7 @@ useEffect(() => {
         console.log(`SensorToggle is: ${isRecording}, Time: ${(Date.now() - startTime)/1000}, Force: ${(data.message - 6848)/25.036}`);
         setMeasurementTime(measurementTime => [...measurementTime, (Date.now() - startTime)/1000]);
         //console.log(`Time: ${measurementTime}`);
-        setMeasurementArray(measurementArray => [...measurementArray, (data.message - 6848)/25.036]);
+        setMeasurementArray(measurementArray => [...measurementArray, (data.message - 7404)/26.586]);
         //console.log(`Data: ${measurementArray}`);
     }
   }
@@ -509,7 +509,6 @@ useEffect(() => {
                 </Grid>
             </Grid>
             <Grid container spacing={3}>
-              
             </Grid>
             <Copyright sx={{ pt: 4 }} />
           </Container>
