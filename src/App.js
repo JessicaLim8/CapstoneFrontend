@@ -5,7 +5,14 @@ import Dashboard from './dashboard/Dashboard';
 import RecordData from './dashboard/RecordData';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
-function App() {
+import React, { useState, useEffect } from 'react';
+import { socket } from './socket';
+import { ConnectionState } from './components/ConnectionState';
+import { ConnectionManager } from './components/ConnectionManager';
+import { MyForm } from './components/MyForm';
+
+
+export default function App() {
   return (
     <Router>
       <div className="App">
@@ -22,5 +29,3 @@ function App() {
     </Router>
   );
 }
-
-export default App;

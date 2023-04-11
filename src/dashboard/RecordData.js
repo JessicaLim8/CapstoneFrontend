@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
@@ -24,20 +24,35 @@ import { IconButton } from '@mui/material';
 import DetailedChart from './DetailedChart';
 import Users from './Users';
 
+//
+import React from 'react';
+
+//import './App.css';
+import io from 'socket.io-client'
+//import { useEffect, useState } from 'react';
+
+import { Chart as ChartJS } from 'chart.js/auto'
+import { Chart }            from 'react-chartjs-2'
+import { Line } from 'react-chartjs-2';
+import { setDate } from 'date-fns';
+//import { Line } from 'react-chartjs-2';
+
+//
+
 const drawerWidth = 240;
 
 function Copyright(props) {
-    return (
-      <Typography variant="body2" color="text.secondary" align="center" {...props}>
-        {'Copyright © '}
-        <Link color="inherit" href="https://mui.com/">
-        Jessica Lim
-        </Link>{' '}
-        {new Date().getFullYear()}
-        {'.'}
-      </Typography>
-    );
-  }
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Made with ❤, '}
+      <Link color="inherit" href="https://www.youtube.com/watch?v=lo1SF7O6nZE">
+      by Eric Chen, Jessica Lim, Kevin Lu, 
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
 
 const instructions = {
   plantarflexion: <div> Sit facing the device with the <b> sole (back) </b> of your foot against the foam pad. </div>,
@@ -100,6 +115,9 @@ const AppBar = styled(MuiAppBar, {
   width: '100vw',
 }));
 
+//
+//
+
 export default function RecordData() {
   const [open, setOpen] = useState(false);
   const [userData, setUserData] = useState([]);
@@ -109,6 +127,10 @@ export default function RecordData() {
   const [exRecordDataRight, setExRecordRight] = useState([]);
   const [exRecordDataLeft, setExRecordLeft] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [postModalText, setPostModalText] = useState('');
+
+  const socket = io.connect("http://localhost:3002");
 
   const handleModalOpen = () => setModalOpen(true);
 
@@ -148,6 +170,201 @@ export default function RecordData() {
     fetchRecords(userid, setRecordData);
     fetchExRecords(userid, exercise, setExRecordLeft, setExRecordRight);
   }, []);
+
+  //
+
+  const [dataType, setDataType] = useState('athlete');
+    const [firstN, setFirstN] = useState('');
+    const [lastN, setLastN] = useState('');
+    const [sport, setSport] = useState('');
+    const [year, setYear] = useState(null);
+    const [sex, setSex] = useState('');
+    const [fetchedSports, setFetchedSports] = useState([]);
+    const [sportName, setSportName] = useState('');
+    const [sportDesc, setSportDesc] = useState('');
+    const [coach, setCoach] = useState('');
+
+    const handleDataChange = (event) => {
+        setDataType(event.target.value);
+    };
+
+    const postAthlete = () => {
+        const usersURL = `/users`;
+        const json = {
+            firstName: firstN,
+            lastName: lastN,
+            year: parseInt(year),
+            sport: sport,
+            sex: sex
+        }
+        axios.post(localURL + usersURL, json).then(_ => {
+            setFirstN('');
+            setLastN('');
+            setSport('');
+            setYear(0);
+            setSex('');
+        });
+    }
+
+    const postSport = () => {
+        const sportsURL = `/sports`;
+        const json = {
+            sport: sportName,
+            coach: coach,
+        }
+        axios.post(localURL + sportsURL, json).then(_ => {
+            setSportName('');
+            setSportDesc('');
+            setCoach('');
+        });
+    }
+
+    const postRecord = async () => {
+      const recordsURL = `/records`;
+      const json = {
+          userId: userid,
+          exerciseType: exercise,
+          side: side,
+          max: Math.max(...measurementArray),
+          avg: measurementArray.reduce((a, b) => a + b, 0) / measurementArray.length,
+          data: measurementArray,
+      }
+      try {
+        const res = await axios.post(localURL + recordsURL, json);
+        setPostModalText("Post to db success!");
+        console.log(res);
+      } catch (e) {
+        console.log("Post to db failed", e);
+        setPostModalText("Post to db failed :(. See console log for error message.")
+        return;
+      }
+      setIsPostModalOpen(true);
+  }
+
+  //
+
+  const [message, setMessage] = useState("");
+  const [messageReceived, setMessageReceived] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
+  const [measurementTime, setMeasurementTime] = useState([]);
+  const [measurementArray, setMeasurementArray] = useState([]);
+  const [startTime, setStartTime] = useState(Date.now());
+
+  const toggleSensor = () => {
+    if (!isRecording){
+      console.log('Recording now ON');
+    }
+    else
+    {
+      console.log('Recording now OFF');
+    }
+    setIsRecording(!isRecording);
+    socket.emit("sendMsg", `${isRecording}`);
+  };
+
+  const resetData = () => {
+    setMeasurementTime([]);
+    setMeasurementArray([]);
+    setStartTime(Date.now());
+  };
+
+  const uploadData = () => {
+
+  };
+
+  const record = useCallback(() => {
+    if (isRecording) {
+      
+    } else {
+      console.log('not recording rn');
+    }
+  }, [isRecording]);
+
+  // useEffect(() => {
+  //   socket.on("getMsg", (data) => {
+  //     setMessageReceived(data.message);
+  //     if (isRecording)
+  //     {
+  //       console.log(`SensorToggle is: ${isRecording}, Time: ${(Date.now() - startTime)/1000}, Force: ${Math.trunc((data.message - 6848)/25.036)}`);
+  //       setMeasurementTime(measurementTime => [...measurementTime, (Date.now() - startTime)/1000]);
+  //       //console.log(`Time: ${MeasurementTime}`);
+  //       setMeasurementArray(measurementArray => [...measurementArray, (data.message - 6848)/25.036]);
+  //       //console.log(`Data: ${MeasurementArray}`);
+  //     }
+  //     else
+  //     {
+  //       console.log('not recording rn');
+  //     }
+      
+  //   });
+  // }, [socket, isRecording]);
+
+
+
+useEffect(() => {
+  const recordValues = (data) => {
+    setMessageReceived(data.message);
+    console.log("isRecording: ", isRecording);
+    if (isRecording && data.message) {
+        console.log(`SensorToggle is: ${isRecording}, Time: ${(Date.now() - startTime)/1000}, Force: ${(data.message - 6848)/25.036}`);
+        setMeasurementTime(measurementTime => [...measurementTime, (Date.now() - startTime)/1000]);
+        //console.log(`Time: ${measurementTime}`);
+        setMeasurementArray(measurementArray => [...measurementArray, (data.message - 6848)/25.036]);
+        //console.log(`Data: ${measurementArray}`);
+    }
+  }
+  socket.on("getMsg", recordValues);
+  // console.log("connected")
+  return () => {
+    // console.log("disconnected");
+    socket.off("getMsg", recordValues);
+  }
+}, [isRecording]);
+
+  const options = {
+    responsive: true,
+    scales: {
+      x: {
+        ticks: {
+          min: 0,
+          beginAtZero: true,
+          stepSize: 1,
+        },
+      },
+      y: {
+        beginAtZero: true,
+      }
+    },
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Load Cell Sensor Data',
+      },
+      
+    },
+  };
+
+  const data = {
+    //labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70],
+    //labels: [1,2],
+    labels: measurementTime,
+    datasets: [
+      {
+        label: 'Force (N)',
+        //data: [95, 85, 124, 143, 163, 213, 232, 300, 360, 437, 566, 702, 802, 899, 1007, 1173, 1499, 1949, 2401, 2753, 3029, 3618, 4491, 4825, 6365, 7985, 10154, 11792, 12528, 13272, 14087, 14558, 14637, 14844, 14255, 14500, 14303, 14116, 14108, 13940, 12499, 12841, 11860, 12312, 11616, 10948, 10143, 9780, 7680, 5629, 3892, 2450, 1694, 1086, 802, 663, 644, 624, 615, 605, 584, 576, 566, 547, 537, 526, 508, 497, 487, 476],
+        //data: [3,4],
+        data: measurementArray,
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      },
+    ],
+  };
+
+
+  //
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -201,6 +418,16 @@ export default function RecordData() {
                 <Users onRowSelect={handleChangeUser} />
               </Box>
           </Modal>
+          <Modal
+            open={isPostModalOpen}>
+            <Box sx={modalStyle}>
+                <IconButton onClick={() => setIsPostModalOpen(false)}>
+                    <CloseIcon/>
+                </IconButton>
+                <p>{postModalText}</p>
+              </Box>
+          </Modal>
+          
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3} sx={{ mt: 4, mb: 4 }}>
                 <Grid item xs={6} md={6} xl={6}>
@@ -235,8 +462,8 @@ export default function RecordData() {
                       onChange={handleChangeSide}
                       defaultValue="left"
                     >
-                      <MenuItem value="left">Left</MenuItem>
-                      <MenuItem value="right">Right</MenuItem>
+                      <MenuItem value="L">Left</MenuItem>
+                      <MenuItem value="R">Right</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -249,29 +476,30 @@ export default function RecordData() {
                   sx={{ flexGrow: 1, fontSize: "0.6em" }}
                 >
                   <b>Instructions:</b> {instructions[exercise]} Adjust the height to center the metatarsals (area just below your toes) on the pad.
+                  
                 </Typography>
                 </Grid>
                 <Grid item xs={12} md={12} xl={12}>
-                  <Button variant="outlined" color="error" onClick={() => console.log()}>
+                  <Button variant="outlined" color="error" onClick={toggleSensor}>
                     <FiberManualRecordIcon/>
-                    Start Recording
+                    Recording {isRecording ? "On" : "Off"}
                   </Button>
+                  <Button variant="outlined" color="primary" onClick={resetData}>
+                    <FiberManualRecordIcon/>
+                    Reset
+                  </Button>
+                  <Button variant="outlined" color="success" onClick={postRecord}>
+                    <FiberManualRecordIcon/>
+                    Upload
+                  </Button>
+                  <Line
+                  options={options}
+                  data={data}
+                  />
                 </Grid>
             </Grid>
             <Grid container spacing={3}>
-                <Grid item xs={12} md={12} lg={12}>
-                    <Paper
-                    sx={{
-                        p: 2,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        height: 240,
-                    }}
-                    >
-                        {side == "left" && <DetailedChart exercise={exercise} left={[]}/>}
-                        {side == "right" && <DetailedChart exercise={exercise} right={[]}/>}
-                    </Paper>
-                </Grid>
+              
             </Grid>
             <Copyright sx={{ pt: 4 }} />
           </Container>
