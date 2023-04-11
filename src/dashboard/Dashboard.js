@@ -401,6 +401,7 @@ export default function Dashboard(props) {
                   <Title>
                   Detailed Charts
                   </Title>
+                <Grid container spacing={3}>
                   {selectedHistory.map(record => (
                     <Grid item xs={12} md={6} lg={6}>
                      <Paper
@@ -411,10 +412,11 @@ export default function Dashboard(props) {
                          height: 240,
                        }}
                      >
-                        <DetailedChart exercise={record.exerciseType} right={record.side == "right" ? record : []} left={record.side == "left" ? record : []} showSummary = {true} showDate = {true} />
+                        <DetailedChart exercise={record.exerciseType} right={record.side == "R" ? record : []} left={record.side == "L" ? record : []} showSummary = {true} showDate = {true} />
                      </Paper>
                    </Grid>
                   ))}
+                  </Grid>
                 </Grid>
               }
             </Grid>

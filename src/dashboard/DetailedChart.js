@@ -19,13 +19,21 @@ function remap(force) {
 }
 
 const dateFormatter = date => {
-  const formatted = format(new Date(date), "MM/dd/yyyy");
-  return formatted;
+  try {
+    console.log(date)
+    const formatted = format(new Date(date), "MM/dd/yyyy");
+    return formatted;
+  }
+  catch (exception){
+    console.log(exception)
+    return "N/A"
+  }
+
 };
 
 export default function DetailedChart(props) {
   const theme = useTheme();
-  const leftProps = props.left;
+  const leftProps = props.left && props.left.length !== 0 ? props.left : undefined;
   const rightProps = props.right;
 
   return (

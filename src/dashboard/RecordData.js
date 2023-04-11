@@ -462,8 +462,8 @@ useEffect(() => {
                       onChange={handleChangeSide}
                       defaultValue="left"
                     >
-                      <MenuItem value="left">Left</MenuItem>
-                      <MenuItem value="right">Right</MenuItem>
+                      <MenuItem value="L">Left</MenuItem>
+                      <MenuItem value="R">Right</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -484,11 +484,11 @@ useEffect(() => {
                     <FiberManualRecordIcon/>
                     Recording {isRecording ? "On" : "Off"}
                   </Button>
-                  <Button variant="outlined" color="error" onClick={resetData}>
+                  <Button variant="outlined" color="primary" onClick={resetData}>
                     <FiberManualRecordIcon/>
                     Reset
                   </Button>
-                  <Button variant="outlined" color="error" onClick={postRecord}>
+                  <Button variant="outlined" color="success" onClick={postRecord}>
                     <FiberManualRecordIcon/>
                     Upload
                   </Button>
