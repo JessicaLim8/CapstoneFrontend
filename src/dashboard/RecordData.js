@@ -42,17 +42,17 @@ import { setDate } from 'date-fns';
 const drawerWidth = 240;
 
 function Copyright(props) {
-    return (
-      <Typography variant="body2" color="text.secondary" align="center" {...props}>
-        {'Copyright © '}
-        <Link color="inherit" href="https://mui.com/">
-        Jessica Lim
-        </Link>{' '}
-        {new Date().getFullYear()}
-        {'.'}
-      </Typography>
-    );
-  }
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Made with ❤, '}
+      <Link color="inherit" href="https://www.youtube.com/watch?v=lo1SF7O6nZE">
+      by Eric Chen, Jessica Lim, Kevin Lu, 
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
 
 const instructions = {
   plantarflexion: <div> Sit facing the device with the <b> sole (back) </b> of your foot against the foam pad. </div>,
@@ -116,9 +116,6 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 //
-
-const socket = io.connect("http://localhost:3002");
-
 //
 
 export default function RecordData() {
@@ -130,6 +127,10 @@ export default function RecordData() {
   const [exRecordDataRight, setExRecordRight] = useState([]);
   const [exRecordDataLeft, setExRecordLeft] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [postModalText, setPostModalText] = useState('');
+
+  const socket = io.connect("http://localhost:3002");
 
   const handleModalOpen = () => setModalOpen(true);
 
@@ -218,14 +219,26 @@ export default function RecordData() {
         });
     }
 
-    const postRecord = () => {
+    const postRecord = async () => {
       const recordsURL = `/records`;
       const json = {
+          userId: userid,
+          exerciseType: exercise,
+          side: side,
+          max: Math.max(...measurementArray),
+          avg: measurementArray.reduce((a, b) => a + b, 0) / measurementArray.length,
           data: measurementArray,
       }
-      axios.post(localURL + recordsURL, json).then(_ => {
-        //setRecordData([0]);
-      });
+      try {
+        const res = await axios.post(localURL + recordsURL, json);
+        setPostModalText("Post to db success!");
+        console.log(res);
+      } catch (e) {
+        console.log("Post to db failed", e);
+        setPostModalText("Post to db failed :(. See console log for error message.")
+        return;
+      }
+      setIsPostModalOpen(true);
   }
 
   //
@@ -240,14 +253,13 @@ export default function RecordData() {
   const toggleSensor = () => {
     if (!isRecording){
       console.log('Recording now ON');
-      socket.emit("sendMsg", {message});
     }
     else
     {
       console.log('Recording now OFF');
-      socket.emit("sendMsg", {message});
     }
     setIsRecording(!isRecording);
+    socket.emit("sendMsg", `${isRecording}`);
   };
 
   const resetData = () => {
@@ -268,36 +280,61 @@ export default function RecordData() {
     }
   }, [isRecording]);
 
-  useEffect(() => {
-    socket.on("getMsg", (data) => {
-      setMessageReceived(data.message);
-      if (isRecording)
-      {
-        console.log(`SensorToggle is: ${isRecording}, Time: ${(Date.now() - startTime)/1000}, Force: ${Math.trunc((data.message - 6848)/25.036)}`);
-        setMeasurementTime(measurementTime => [...measurementTime, (Date.now() - startTime)/1000]);
-        //console.log(`Time: ${MeasurementTime}`);
-        setMeasurementArray(measurementArray => [...measurementArray, (data.message - 6848)/25.036]);
-        //console.log(`Data: ${MeasurementArray}`);
-      }
-      else
-      {
-        console.log('not recording rn');
-      }
+  // useEffect(() => {
+  //   socket.on("getMsg", (data) => {
+  //     setMessageReceived(data.message);
+  //     if (isRecording)
+  //     {
+  //       console.log(`SensorToggle is: ${isRecording}, Time: ${(Date.now() - startTime)/1000}, Force: ${Math.trunc((data.message - 6848)/25.036)}`);
+  //       setMeasurementTime(measurementTime => [...measurementTime, (Date.now() - startTime)/1000]);
+  //       //console.log(`Time: ${MeasurementTime}`);
+  //       setMeasurementArray(measurementArray => [...measurementArray, (data.message - 6848)/25.036]);
+  //       //console.log(`Data: ${MeasurementArray}`);
+  //     }
+  //     else
+  //     {
+  //       console.log('not recording rn');
+  //     }
       
-    });
-  }, [socket]);
+  //   });
+  // }, [socket, isRecording]);
+
+
+
+useEffect(() => {
+  const recordValues = (data) => {
+    setMessageReceived(data.message);
+    console.log("isRecording: ", isRecording);
+    if (isRecording && data.message) {
+        console.log(`SensorToggle is: ${isRecording}, Time: ${(Date.now() - startTime)/1000}, Force: ${(data.message - 6848)/25.036}`);
+        setMeasurementTime(measurementTime => [...measurementTime, (Date.now() - startTime)/1000]);
+        //console.log(`Time: ${measurementTime}`);
+        setMeasurementArray(measurementArray => [...measurementArray, (data.message - 6848)/25.036]);
+        //console.log(`Data: ${measurementArray}`);
+    }
+  }
+  socket.on("getMsg", recordValues);
+  // console.log("connected")
+  return () => {
+    // console.log("disconnected");
+    socket.off("getMsg", recordValues);
+  }
+}, [isRecording]);
 
   const options = {
     responsive: true,
-    //animation: false,
-    // scales: {
-    //   x: {
-    //     type: 'time',
-    //     time: {
-    //       unit: 'second',
-    //     },
-    //   },
-    // },
+    scales: {
+      x: {
+        ticks: {
+          min: 0,
+          beginAtZero: true,
+          stepSize: 1,
+        },
+      },
+      y: {
+        beginAtZero: true,
+      }
+    },
     plugins: {
       legend: {
         position: 'top',
@@ -381,6 +418,16 @@ export default function RecordData() {
                 <Users onRowSelect={handleChangeUser} />
               </Box>
           </Modal>
+          <Modal
+            open={isPostModalOpen}>
+            <Box sx={modalStyle}>
+                <IconButton onClick={() => setIsPostModalOpen(false)}>
+                    <CloseIcon/>
+                </IconButton>
+                <p>{postModalText}</p>
+              </Box>
+          </Modal>
+          
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3} sx={{ mt: 4, mb: 4 }}>
                 <Grid item xs={6} md={6} xl={6}>
@@ -441,7 +488,7 @@ export default function RecordData() {
                     <FiberManualRecordIcon/>
                     Reset
                   </Button>
-                  <Button variant="outlined" color="error" onClick={uploadData}>
+                  <Button variant="outlined" color="error" onClick={postRecord}>
                     <FiberManualRecordIcon/>
                     Upload
                   </Button>

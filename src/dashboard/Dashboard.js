@@ -47,9 +47,9 @@ const dateLastMonth = new Date(dateNow - 31*days);
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-      Jessica Lim
+      {'Made with ❤, '}
+      <Link color="inherit" href="https://www.youtube.com/watch?v=lo1SF7O6nZE">
+      by Eric Chen, Jessica Lim, Kevin Lu, 
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -411,7 +411,7 @@ export default function Dashboard(props) {
                          height: 240,
                        }}
                      >
-                        <DetailedChart exercise={record.exerciseType} right={record.side == "R" ? record : []} left={record.side == "L" ? record : []} showSummary = {true} showDate = {true} />
+                        <DetailedChart exercise={record.exerciseType} right={record.side == "right" ? record : []} left={record.side == "left" ? record : []} showSummary = {true} showDate = {true} />
                      </Paper>
                    </Grid>
                   ))}
