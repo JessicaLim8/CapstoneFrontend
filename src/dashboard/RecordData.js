@@ -23,6 +23,8 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { IconButton } from '@mui/material';
 import DetailedChart from './DetailedChart';
 import Users from './Users';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import SaveIcon from '@mui/icons-material/Save';
 
 //
 import React from 'react';
@@ -123,7 +125,7 @@ export default function RecordData() {
   const [userData, setUserData] = useState([]);
   const [recordData, setRecordData] = useState([]);
   const [exercise, setExercise] = useState('plantarflexion');
-  const [side, setSide] = useState('left');
+  const [side, setSide] = useState('L');
   const [exRecordDataRight, setExRecordRight] = useState([]);
   const [exRecordDataLeft, setExRecordLeft] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -460,7 +462,7 @@ useEffect(() => {
                       value={side}
                       label="Side"
                       onChange={handleChangeSide}
-                      defaultValue="left"
+                      defaultValue="L"
                     >
                       <MenuItem value="L">Left</MenuItem>
                       <MenuItem value="R">Right</MenuItem>
@@ -479,19 +481,27 @@ useEffect(() => {
                   
                 </Typography>
                 </Grid>
-                <Grid item xs={12} md={12} xl={12}>
-                  <Button variant="outlined" color="error" onClick={toggleSensor}>
-                    <FiberManualRecordIcon/>
-                    Recording {isRecording ? "On" : "Off"}
-                  </Button>
-                  <Button variant="outlined" color="primary" onClick={resetData}>
-                    <FiberManualRecordIcon/>
-                    Reset
-                  </Button>
-                  <Button variant="outlined" color="success" onClick={postRecord}>
-                    <FiberManualRecordIcon/>
-                    Upload
-                  </Button>
+                <Grid item xs={12} align = "center" justify = "center" alignItems = "center" >
+                  <Grid container xs={12} md={10} xl={8}>
+                    <Grid item xs={4}>
+                      <Button variant={isRecording ? "contained" : "outlined"} color="error" onClick={toggleSensor}>
+                        <FiberManualRecordIcon/>
+                        {isRecording ? "Stop" : "Start"} Recording 
+                      </Button>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Button variant={isRecording ? "outlined" : "disabled"} color="primary" onClick={resetData}>
+                        <RestartAltIcon/>
+                        Reset
+                      </Button>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Button variant={isRecording ? "outlined" : "disabled"} color="success" onClick={postRecord}>
+                        <SaveIcon/>
+                        Save
+                      </Button>
+                    </Grid>
+                  </Grid>
                   <Line
                   options={options}
                   data={data}
